@@ -222,8 +222,8 @@ export const siteConfig = {
     },
     {
       name: "Mai Tran",
-      role: "Co-Founder & CRO",
-      title: "Chief Marketing Officer & Business Analyst",
+      role: "Co-Founder & CCSO",
+      title: "Chief Customer Success Officer & Business Analyst",
       bio: null,
       // bio: "I'm a data scientist and the founder of Blinko Analytics with over 8 years of experience and two degrees in statistics, including a master's from the Georgia Institute of Technology. I've worked with companies like Intel and Perimeter 81, published healthcare analytics research with Oxford University Press, and am a Pro and Top Rated freelancer on Fiverr.",
       image: `${import.meta.env.BASE_URL}leadership/mai.jpg` as string | null,
