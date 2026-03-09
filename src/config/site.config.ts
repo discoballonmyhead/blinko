@@ -295,9 +295,9 @@ export const siteConfig = {
       { city: "Haifa", address: "Pinkser 71, Haifa, Israel" },
       { city: "Hanoi", address: "168 Ngoc Ha Street, Hanoi, Vietnam" },
     ],
-    email: "hello@blinko-analytics.com",
-    phone: "+972 50 000 0000",       // set to null to hide
-    linkedin: "https://www.linkedin.com/in/dror-rosentraub/" as string | null,
+    email: "info@blinko-analytics.com",
+    phone: "+need to put number here",       // set to null to hide
+    linkedin: "https://www.linkedin.com/company/bizgrow-data-solutions/" as string | null,
   },
 
   // ─── Footer ───────────────────────────────────────────────
