@@ -3,8 +3,6 @@ import { Suspense, lazy, useEffect } from "react";
 import { Navbar } from "./components/Navbar";
 import { Footer } from "./components/Footer";
 
-// Lazy-load every page — each becomes its own chunk, users only
-// download the page they actually visit.
 const HomePage = lazy(() => import("./pages/HomePage").then(m => ({ default: m.HomePage })));
 const ProductsPage = lazy(() => import("./pages/ProductsPage").then(m => ({ default: m.ProductsPage })));
 const PricingPage = lazy(() => import("./pages/PricingPage").then(m => ({ default: m.PricingPage })));
@@ -13,7 +11,6 @@ const PredictiveDemoPage = lazy(() => import("./pages/demos/PredictiveDemoPage")
 
 const DEMO_ROUTES = ["/demo/", "/demos/"];
 
-// Minimal fallback — matches the site background, no flash
 function PageShell() {
   return <div style={{ minHeight: "100vh", background: "#030814" }} />;
 }
@@ -32,9 +29,9 @@ function MainLayout() {
       <Navbar />
       <main>
         <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/products" element={<ProductsPage />} />
-          <Route path="/pricing" element={<PricingPage />} />
+          <Route index element={<HomePage />} />
+          <Route path="products" element={<ProductsPage />} />
+          <Route path="pricing" element={<PricingPage />} />
         </Routes>
       </main>
       <Footer />
