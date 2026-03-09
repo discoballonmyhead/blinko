@@ -1,0 +1,26 @@
+{
+    "name": "Blinko Analytics",
+    "short_name": "Blinko",
+    "description": "AI-powered business intelligence and analytics platform",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#080F1F",
+    "theme_color": "#00C2FF",
+    "icons": [
+        {
+            "src": "/images/logo_header.png",
+            "sizes": "32x32",
+            "type": "image/png"
+        },
+        {
+            "src": "/images/logo_header.png",
+            "sizes": "180x180",
+            "type": "image/png"
+        },
+        {
+            "src": "/images/logo_header.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        }
+    ]
+}

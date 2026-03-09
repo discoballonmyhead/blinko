@@ -38,14 +38,18 @@ function TestimonialCard({ t }: { t: Testimonial }) {
             border: "1px solid rgba(255,255,255,0.07)", borderRadius: 20,
             marginRight: 16,
         }}>
-            {/* Stars */}
-            <div style={{ display: "flex", gap: 3, marginBottom: 14 }}>
-                {Array.from({ length: 5 }).map((_, i) => (
-                    <svg key={i} width="12" height="12" viewBox="0 0 24 24" fill="#00C2FF">
-                        <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26" />
-                    </svg>
-                ))}
-            </div>
+            <svg
+                width="28" height="22"
+                viewBox="0 0 28 22"
+                fill="none"
+                style={{ marginBottom: 12, flexShrink: 0 }}
+            >
+                <path
+                    d="M0 22V13.6C0 9.87 0.98 6.8 2.94 4.38C4.9 1.96 7.7 0.46 11.34 0L12.6 2.2C10.08 2.76 8.2 3.88 6.96 5.56C5.72 7.24 5.1 9.12 5.1 11.2H10.08V22H0ZM15.96 22V13.6C15.96 9.87 16.94 6.8 18.9 4.38C20.86 1.96 23.66 0.46 27.3 0L28 2.2C25.48 2.76 23.6 3.88 22.36 5.56C21.12 7.24 20.5 9.12 20.5 11.2H25.48V22H15.96Z"
+                    fill="currentColor"
+                    style={{ color: "rgba(0, 195, 255, 0.84)" }}
+                />
+            </svg>
             <p style={{
                 color: "rgba(255,255,255,0.65)", fontSize: "0.88rem",
                 lineHeight: 1.75, marginBottom: 20, fontStyle: "italic",
