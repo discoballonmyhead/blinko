@@ -54,7 +54,8 @@ export function Navbar() {
       initial={{ y: -80, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.6, ease: "easeOut" }}
-      style={{ position: "fixed", top: 0, left: 0, right: 0, zIndex: 50,
+      style={{
+        position: "fixed", top: 0, left: 0, right: 0, zIndex: 50,
         transition: "all 0.4s ease",
         background: scrolled ? "rgba(3,8,20,0.92)" : "transparent",
         backdropFilter: scrolled ? "blur(20px)" : "none",
@@ -66,34 +67,44 @@ export function Navbar() {
 
         {/* Logo */}
         <Link to="/" style={{ display: "flex", alignItems: "center", gap: 10, textDecoration: "none" }}>
-          <div style={{ position: "relative", width: 32, height: 32 }}>
-            <div style={{ position: "absolute", inset: 0, background: "linear-gradient(135deg, #00C2FF, #0066FF)", borderRadius: 8, opacity: 0.85 }} />
-            <div style={{ position: "absolute", inset: 2, background: "#030814", borderRadius: 6, display: "flex", alignItems: "center", justifyContent: "center" }}>
-              <span style={{ color: "#00C2FF", fontWeight: 800, fontSize: 13 }}>B</span>
-            </div>
-          </div>
-          <span style={{ color: "#fff", fontFamily: "Syne, sans-serif", fontWeight: 800, fontSize: 18, letterSpacing: "-0.02em" }}>
-            {siteConfig.brand.name}<span style={{ color: "#00C2FF" }}>.</span>
-          </span>
+          {siteConfig.brand.logo ? (
+            <img src={siteConfig.brand.logo} alt={siteConfig.brand.name} style={{ height: 32, width: "auto", display: "block" }} />
+          ) : (
+            <>
+              <div style={{ position: "relative", width: 32, height: 32 }}>
+                <div style={{ position: "absolute", inset: 0, background: "linear-gradient(135deg, #00C2FF, #0066FF)", borderRadius: 8, opacity: 0.85 }} />
+                <div style={{ position: "absolute", inset: 2, background: "#030814", borderRadius: 6, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                  <span style={{ color: "#00C2FF", fontWeight: 800, fontSize: 13 }}>{siteConfig.brand.name[0]}</span>
+                </div>
+              </div>
+              <span style={{ color: "#fff", fontFamily: "Syne, sans-serif", fontWeight: 800, fontSize: 18, letterSpacing: "-0.02em" }}>
+                {siteConfig.brand.name}<span style={{ color: "#00C2FF" }}>.</span>
+              </span>
+            </>
+          )}
         </Link>
 
         {/* Desktop nav */}
         <nav style={{ display: "flex", alignItems: "center", gap: 2 }} className="hidden md:flex">
-          {siteConfig.nav.links.map((link) => (
+          {siteConfig.nav.links.map((link, li) => (
             link.path.startsWith("/#") ? (
-              <button key={link.path} onClick={() => handleHashLink(link.path)}
-                style={{ padding: "8px 16px", borderRadius: 8, border: "none", cursor: "pointer", background: "transparent", fontSize: 14, fontWeight: 500, transition: "all 0.2s",
-                  color: isActive(link.path) ? "#00C2FF" : "rgba(255,255,255,0.55)" }}
-                onMouseEnter={e => { if (!isActive(link.path)) { (e.currentTarget as HTMLElement).style.color = "#fff"; (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.05)"; }}}
-                onMouseLeave={e => { if (!isActive(link.path)) { (e.currentTarget as HTMLElement).style.color = "rgba(255,255,255,0.55)"; (e.currentTarget as HTMLElement).style.background = "transparent"; }}}>
+              <button key={`nav-${li}`} onClick={() => handleHashLink(link.path)}
+                style={{
+                  padding: "8px 16px", borderRadius: 8, border: "none", cursor: "pointer", background: "transparent", fontSize: 14, fontWeight: 500, transition: "all 0.2s",
+                  color: isActive(link.path) ? "#00C2FF" : "rgba(255,255,255,0.55)"
+                }}
+                onMouseEnter={e => { if (!isActive(link.path)) { (e.currentTarget as HTMLElement).style.color = "#fff"; (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.05)"; } }}
+                onMouseLeave={e => { if (!isActive(link.path)) { (e.currentTarget as HTMLElement).style.color = "rgba(255,255,255,0.55)"; (e.currentTarget as HTMLElement).style.background = "transparent"; } }}>
                 {link.label}
               </button>
             ) : (
               <Link key={link.path} to={link.path}
-                style={{ padding: "8px 16px", borderRadius: 8, textDecoration: "none", fontSize: 14, fontWeight: 500, transition: "all 0.2s", display: "block",
-                  color: isActive(link.path) ? "#00C2FF" : "rgba(255,255,255,0.55)" }}
-                onMouseEnter={e => { if (!isActive(link.path)) { (e.currentTarget as HTMLElement).style.color = "#fff"; (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.05)"; }}}
-                onMouseLeave={e => { if (!isActive(link.path)) { (e.currentTarget as HTMLElement).style.color = "rgba(255,255,255,0.55)"; (e.currentTarget as HTMLElement).style.background = "transparent"; }}}>
+                style={{
+                  padding: "8px 16px", borderRadius: 8, textDecoration: "none", fontSize: 14, fontWeight: 500, transition: "all 0.2s", display: "block",
+                  color: isActive(link.path) ? "#00C2FF" : "rgba(255,255,255,0.55)"
+                }}
+                onMouseEnter={e => { if (!isActive(link.path)) { (e.currentTarget as HTMLElement).style.color = "#fff"; (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.05)"; } }}
+                onMouseLeave={e => { if (!isActive(link.path)) { (e.currentTarget as HTMLElement).style.color = "rgba(255,255,255,0.55)"; (e.currentTarget as HTMLElement).style.background = "transparent"; } }}>
                 {link.label}
               </Link>
             )
@@ -113,9 +124,9 @@ export function Navbar() {
           <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }}
             style={{ background: "rgba(3,8,20,0.97)", backdropFilter: "blur(20px)", borderTop: "1px solid rgba(255,255,255,0.05)", padding: "12px 24px 20px", display: "flex", flexDirection: "column", gap: 2 }}
             className="md:hidden">
-            {siteConfig.nav.links.map((link) => (
+            {siteConfig.nav.links.map((link, li) => (
               link.path.startsWith("/#") ? (
-                <button key={link.path} onClick={() => handleHashLink(link.path)}
+                <button key={`mob-${li}`} onClick={() => handleHashLink(link.path)}
                   style={{ textAlign: "left", padding: "12px 16px", borderRadius: 8, border: "none", background: "none", cursor: "pointer", fontSize: 14, color: "rgba(255,255,255,0.65)", fontWeight: 500 }}>
                   {link.label}
                 </button>

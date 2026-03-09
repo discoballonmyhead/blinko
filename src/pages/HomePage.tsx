@@ -17,13 +17,13 @@ import { sectionParticles } from "../config/particles.config";
 // ─────────────────────────────────────────────────────────────────────────────
 
 const iconMap: Record<string, React.ReactNode> = {
-  BarChart3:    <BarChart3    size={24} />,
-  Layout:       <Layout       size={24} />,
+  BarChart3: <BarChart3 size={24} />,
+  Layout: <Layout size={24} />,
   BrainCircuit: <BrainCircuit size={24} />,
-  Zap:          <Zap          size={18} />,
-  Layers:       <Layers       size={18} />,
-  RefreshCw:    <RefreshCw    size={18} />,
-  Shield:       <Shield       size={18} />,
+  Zap: <Zap size={18} />,
+  Layers: <Layers size={18} />,
+  RefreshCw: <RefreshCw size={18} />,
+  Shield: <Shield size={18} />,
 };
 
 function FadeUp({ children, delay = 0, className = "" }: {
@@ -37,6 +37,180 @@ function FadeUp({ children, delay = 0, className = "" }: {
 // ProductContent — just the text/card side of each product section
 // (The particle shape is handled by ParticleSplitSection wrapper)
 // ─────────────────────────────────────────────────────────────────────────────
+
+// ── Leadership Section ────────────────────────────────────────────────────────
+
+function LeadershipSection() {
+  const team = siteConfig.leadership;
+  const [activeIdx, setActiveIdx] = useState(0);
+
+  // Unique roles for the filter tabs
+  const roles = ["All", ...Array.from(new Set(team.map(p => p.role)))];
+  const [activeRole, setActiveRole] = useState("All");
+
+  const filtered = activeRole === "All" ? team : team.filter(p => p.role === activeRole);
+  const active = filtered[activeIdx] ?? filtered[0];
+
+  // Reset selected card when filter changes
+  const handleRole = (role: string) => { setActiveRole(role); setActiveIdx(0); };
+
+  return (
+    <section id="founder" style={{ position: "relative", zIndex: 2, padding: "88px 64px" }}>
+      <div style={{ maxWidth: 1100, margin: "0 auto" }}>
+        <FadeUp>
+          {/* Header */}
+          <div style={{ textAlign: "center", marginBottom: 52 }}>
+            <span className="eyebrow" style={{ marginBottom: 20, display: "inline-flex" }}>Our Team</span>
+            <h2 style={{ fontFamily: "Syne, sans-serif", fontWeight: 800, fontSize: "clamp(1.9rem,3.5vw,2.8rem)", color: "#fff", marginBottom: 14 }}>
+              The People Behind Blinko
+            </h2>
+            <p style={{ color: "rgba(255,255,255,0.48)", fontSize: "1rem", maxWidth: 520, margin: "0 auto" }}>
+              A team of data scientists, engineers, and strategists obsessed with turning data into decisions.
+            </p>
+          </div>
+
+          {/* Role filter tabs — only shown when more than one role exists */}
+          {roles.length > 2 && (
+            <div style={{ display: "flex", justifyContent: "center", gap: 8, marginBottom: 44, flexWrap: "wrap" }}>
+              {roles.map(role => (
+                <button key={role} onClick={() => handleRole(role)} style={{
+                  padding: "8px 22px", borderRadius: 100, cursor: "pointer", fontSize: 13, fontWeight: 600,
+                  fontFamily: "DM Sans, sans-serif", letterSpacing: "0.04em", border: "1px solid",
+                  transition: "all 0.2s ease",
+                  background: activeRole === role ? "rgba(0,194,255,0.12)" : "transparent",
+                  borderColor: activeRole === role ? "rgba(0,194,255,0.4)" : "rgba(255,255,255,0.1)",
+                  color: activeRole === role ? "#00C2FF" : "rgba(255,255,255,0.45)",
+                }}>
+                  {role}
+                </button>
+              ))}
+            </div>
+          )}
+
+          {/* Layout: card grid left + expanded detail right (single person → centred card) */}
+          {filtered.length === 1 ? (
+            // Single person — wide centred card
+            <PersonCard person={filtered[0]} expanded />
+          ) : (
+            <div style={{ display: "grid", gridTemplateColumns: "280px 1fr", gap: 24, alignItems: "start" }}>
+              {/* Card list */}
+              <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                {filtered.map((person, i) => (
+                  <button key={person.name} onClick={() => setActiveIdx(i)} style={{
+                    display: "flex", alignItems: "center", gap: 14,
+                    padding: "14px 18px", borderRadius: 16, cursor: "pointer", textAlign: "left",
+                    border: "1px solid", transition: "all 0.2s ease", width: "100%",
+                    background: activeIdx === i ? "rgba(8,15,31,0.95)" : "rgba(8,15,31,0.5)",
+                    borderColor: activeIdx === i ? (person.accent ?? "rgba(0,194,255,0.35)") : "rgba(255,255,255,0.07)",
+                    boxShadow: activeIdx === i ? `0 0 20px ${(person.accent ?? "#00C2FF")}18` : "none",
+                  }}>
+                    {/* Mini avatar */}
+                    {person.image ? (
+                      <img src={person.image} alt={person.name}
+                        style={{ width: 44, height: 44, borderRadius: 10, objectFit: "cover", flexShrink: 0 }} />
+                    ) : (
+                      <div style={{
+                        width: 44, height: 44, borderRadius: 10, flexShrink: 0,
+                        background: `linear-gradient(135deg, ${(person.accent ?? "#00C2FF")}22, ${(person.accent ?? "#00C2FF")}08)`,
+                        border: `1px solid ${(person.accent ?? "#00C2FF")}30`,
+                        display: "flex", alignItems: "center", justifyContent: "center",
+                        fontFamily: "Syne, sans-serif", fontWeight: 800, fontSize: "1.1rem",
+                        color: person.accent ?? "#00C2FF",
+                      }}>
+                        {person.name[0]}
+                      </div>
+                    )}
+                    <div style={{ minWidth: 0 }}>
+                      <div style={{ color: "#fff", fontWeight: 600, fontSize: 14, fontFamily: "Syne, sans-serif", marginBottom: 2, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                        {person.name}
+                      </div>
+                      <div style={{ color: person.accent ?? "#00C2FF", fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase" }}>
+                        {person.role}
+                      </div>
+                    </div>
+                  </button>
+                ))}
+              </div>
+
+              {/* Expanded detail panel */}
+              {active && <PersonCard person={active} expanded key={active.name} />}
+            </div>
+          )}
+        </FadeUp>
+      </div>
+    </section>
+  );
+}
+
+// Individual person card
+function PersonCard({ person, expanded }: {
+  person: typeof siteConfig.leadership[0];
+  expanded?: boolean;
+}) {
+  const accent = person.accent ?? "#00C2FF";
+  return (
+    <div style={{
+      background: "rgba(8,15,31,0.88)", backdropFilter: "blur(16px)",
+      border: `1px solid ${accent}20`,
+      borderRadius: 24, padding: expanded ? "44px 48px" : "28px 32px",
+      display: "flex", gap: 40, alignItems: "flex-start", flexWrap: "wrap",
+      boxShadow: `0 0 40px ${accent}0a`,
+      transition: "all 0.3s ease",
+    }}>
+      {/* Avatar */}
+      <div style={{ flexShrink: 0 }}>
+        {person.image ? (
+          <img src={person.image} alt={person.name} style={{
+            width: expanded ? 130 : 90, height: expanded ? 130 : 90,
+            borderRadius: 16, objectFit: "cover",
+            border: `1px solid ${accent}30`,
+          }} />
+        ) : (
+          <div style={{
+            width: expanded ? 130 : 90, height: expanded ? 130 : 90, borderRadius: 16,
+            background: `linear-gradient(135deg, ${accent}18, ${accent}06)`,
+            border: `1px solid ${accent}28`,
+            display: "flex", alignItems: "center", justifyContent: "center",
+            fontFamily: "Syne, sans-serif", fontWeight: 800,
+            fontSize: expanded ? "3rem" : "2rem", color: accent,
+          }}>
+            {person.name[0]}
+          </div>
+        )}
+      </div>
+
+      {/* Text */}
+      <div style={{ flex: 1, minWidth: 240 }}>
+        <span style={{ color: accent, fontSize: 11, fontWeight: 700, letterSpacing: "0.13em", textTransform: "uppercase" }}>
+          {person.role}
+        </span>
+        <h3 style={{ fontFamily: "Syne, sans-serif", fontWeight: 800, fontSize: expanded ? "1.85rem" : "1.3rem", color: "#fff", marginTop: 8, marginBottom: 4 }}>
+          {person.name}
+        </h3>
+        <p style={{ color: "rgba(255,255,255,0.32)", fontSize: 14, marginBottom: 18 }}>
+          {person.title}
+        </p>
+        {expanded && (
+          <p style={{ color: "rgba(255,255,255,0.6)", fontSize: "0.95rem", lineHeight: 1.8, marginBottom: 26, maxWidth: 560 }}>
+            {/*person.bio*/}
+          </p>
+        )}
+        {person.linkedin && (
+          <a href={person.linkedin} target="_blank" rel="noopener noreferrer" style={{
+            display: "inline-flex", alignItems: "center", gap: 8, padding: "9px 20px",
+            borderRadius: 10, background: `${accent}14`, border: `1px solid ${accent}30`,
+            color: accent, fontSize: 13, fontWeight: 700, textDecoration: "none",
+            transition: "all 0.2s ease",
+          }}>
+            <Linkedin size={13} /> LinkedIn
+          </a>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// ── Product Content ───────────────────────────────────────────────────────────
 
 function ProductContent({ product }: { product: typeof siteConfig.products[0] }) {
   return (
@@ -181,16 +355,6 @@ export function HomePage() {
             </div>
           </div>
 
-          {/* Scroll cue line */}
-          <div
-            style={{ position: "absolute", bottom: 36, left: "50%", transform: "translateX(-50%)" }}>
-            <div style={{
-              display: "flex", flexDirection: "column", alignItems: "center", gap: 8,
-            }}>
-              <span style={{ color: "rgba(255,255,255,0.2)", fontSize: 10, letterSpacing: "0.15em", textTransform: "uppercase" }}>Scroll</span>
-              <div style={{ width: 1, height: 48, background: "linear-gradient(to bottom, rgba(0,194,255,0.4), transparent)" }} />
-            </div>
-          </div>
         </section>
 
         {/* ══════════════════════════ PRODUCT SECTIONS ══════════════════════════
@@ -308,49 +472,8 @@ export function HomePage() {
         </section>
 
         {/* ══════════════════════════ FOUNDER ══════════════════════════ */}
-        <section id="founder" style={{ position: "relative", zIndex: 2, padding: "88px 64px" }}>
-          <div style={{ maxWidth: 1000, margin: "0 auto" }}>
-            <FadeUp>
-              <div style={{
-                background: "rgba(8,15,31,0.88)", backdropFilter: "blur(16px)",
-                border: "1px solid rgba(255,255,255,0.07)", borderRadius: 28,
-                padding: "56px 52px", display: "flex", gap: 52, alignItems: "center", flexWrap: "wrap",
-              }}>
-                <div style={{ flexShrink: 0 }}>
-                  {siteConfig.founder.image ? (
-                    <img src={siteConfig.founder.image} alt={siteConfig.founder.name}
-                      style={{ width: 150, height: 150, borderRadius: 18, objectFit: "cover", border: "1px solid rgba(0,194,255,0.2)" }} />
-                  ) : (
-                    <div style={{
-                      width: 150, height: 150, borderRadius: 18,
-                      background: "linear-gradient(135deg, rgba(0,194,255,0.1), rgba(0,102,255,0.1))",
-                      border: "1px solid rgba(0,194,255,0.18)",
-                      display: "flex", alignItems: "center", justifyContent: "center",
-                    }}>
-                      <span className="gradient-text" style={{ fontFamily: "Syne, sans-serif", fontSize: "3.5rem", fontWeight: 800 }}>
-                        {siteConfig.founder.name[0]}
-                      </span>
-                    </div>
-                  )}
-                </div>
-                <div style={{ flex: 1, minWidth: 280 }}>
-                  <span style={{ color: "#00C2FF", fontSize: 11, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase" }}>Founder</span>
-                  <h3 style={{ fontFamily: "Syne, sans-serif", fontWeight: 800, fontSize: "1.9rem", color: "#fff", marginTop: 8, marginBottom: 6 }}>{siteConfig.founder.name}</h3>
-                  <p style={{ color: "rgba(255,255,255,0.32)", fontSize: 14, marginBottom: 18 }}>{siteConfig.founder.title}</p>
-                  <p style={{ color: "rgba(255,255,255,0.58)", fontSize: "0.95rem", lineHeight: 1.78, marginBottom: 26, maxWidth: 520 }}>{siteConfig.founder.bio}</p>
-                  <a href={siteConfig.founder.linkedin} target="_blank" rel="noopener noreferrer" style={{
-                    display: "inline-flex", alignItems: "center", gap: 8,
-                    padding: "10px 22px", borderRadius: 10,
-                    background: "rgba(0,102,255,0.12)", border: "1px solid rgba(0,102,255,0.28)",
-                    color: "#00C2FF", fontSize: 13, fontWeight: 700, textDecoration: "none",
-                  }}>
-                    <Linkedin size={14} /> Connect on LinkedIn
-                  </a>
-                </div>
-              </div>
-            </FadeUp>
-          </div>
-        </section>
+        {/* ══════════════════════════ LEADERSHIP ══════════════════════════ */}
+        <LeadershipSection />
 
         {/* ══════════════════════════ PRICING ══════════════════════════ */}
         <section id="pricing" style={{ position: "relative", zIndex: 2, padding: "88px 64px" }}>

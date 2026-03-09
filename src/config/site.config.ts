@@ -8,8 +8,8 @@ export const siteConfig = {
   brand: {
     name: "Blinko",
     tagline: "Analytics",
-    logo: null,
-    favicon: null,
+    logo: "/images/logo.png",
+    favicon: "/images/logo.png",
   },
 
   // ─── Navigation ──────────────────────────────────────────
@@ -137,14 +137,68 @@ export const siteConfig = {
     { metric: "2400", label: "hrs/year Saved", description: "AI-powered data matching makes high-confidence outreach", client: "Alcrest Partners", url: "#" },
   ],
 
-  // ─── Founder / About ──────────────────────────────────────
-  founder: {
-    name: "Dror Rosentraub",
-    title: "Data Science & Statistics Consultant | Founder",
-    bio: "I'm a data scientist and the founder of Blinko Analytics with over 8 years of experience and two degrees in statistics, including a master's from the Georgia Institute of Technology. I've worked with companies like Intel and Perimeter 81, published healthcare analytics research with Oxford University Press, and am a Pro and Top Rated freelancer on Fiverr.",
-    image: null as string | null,
-    linkedin: "https://www.linkedin.com/in/dror-rosentraub/",
-  },
+  // ─── Leadership ───────────────────────────────────────────
+  //
+  // Add as many people as you like. Each person shows up as a card
+  // in the Leadership section on the homepage.
+  //
+  // Fields:
+  //   name       Full name
+  //   role       Short role label shown in the coloured badge  (e.g. "Founder", "CTO")
+  //   title      Full job title shown under the name
+  //   bio        Paragraph bio — 2-4 sentences works best
+  //   image      Path inside /public  e.g. "/images/dror.jpg"  — null shows initials avatar
+  //   linkedin   Full https:// URL — null hides the button
+  //   accent     Hex colour for this person's card accent / badge  (optional, defaults to cyan)
+  //
+  leadership: [
+    {
+      name: "Dror Rosentraub",
+      role: "Founder",
+      title: "Data Science & Statistics Consultant",
+      // bio: "I'm a data scientist and the founder of Blinko Analytics with over 8 years of experience and two degrees in statistics, including a master's from the Georgia Institute of Technology. I've worked with companies like Intel and Perimeter 81, published healthcare analytics research with Oxford University Press, and am a Pro and Top Rated freelancer on Fiverr.",
+      image: '/leadership/dror.jpg' as string | null,
+      linkedin: "https://www.linkedin.com/in/dror-rosentraub/" as string | null,
+      accent: "#00C2FF",
+    },
+    {
+      name: "Mai Tran",
+      role: "CRO",
+      title: "Chief Marketing Officer and Business Analyst",
+      // bio: "I'm a data scientist and the founder of Blinko Analytics with over 8 years of experience and two degrees in statistics, including a master's from the Georgia Institute of Technology. I've worked with companies like Intel and Perimeter 81, published healthcare analytics research with Oxford University Press, and am a Pro and Top Rated freelancer on Fiverr.",
+      image: '/leadership/mai.jpg' as string | null,
+      linkedin: "https://www.linkedin.com/in/mai-tran-921818174/" as string | null,
+      accent: "#00C2FF",
+    },
+    {
+      name: "Sagnik Das",
+      role: "",
+      title: "Builder & Security Analyst",
+      //bio: "",
+      image: null as string | null,
+      linkedin: "https://www.linkedin.com/in/sagnikdas1/" as string | null,
+      accent: "#00C2FF",
+    },
+    // ── Add more team members below ─────────────────────────────────
+    // {
+    //   name: "Jane Smith",
+    //   role: "CTO",
+    //   title: "Chief Technology Officer",
+    //   bio: "Jane leads all engineering and infrastructure at Blinko...",
+    //   image: null as string | null,
+    //   linkedin: "https://www.linkedin.com/in/janesmith/" as string | null,
+    //   accent: "#7B61FF",
+    // },
+    // {
+    //   name: "Alex Johnson",
+    //   role: "Head of Data",
+    //   title: "Principal Data Scientist",
+    //   bio: "Alex drives our ML research and client model delivery...",
+    //   image: null as string | null,
+    //   linkedin: null as string | null,
+    //   accent: "#00FFB2",
+    // },
+  ],
 
   // ─── Pricing ──────────────────────────────────────────────
   pricing: {

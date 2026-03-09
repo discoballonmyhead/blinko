@@ -1,10 +1,9 @@
 /**
- * ╔══════════════════════════════════════════════════════════════════╗
- * ║           BLINKO ANALYTICS — PARTICLE SYSTEM CONFIG             ║
- * ╚══════════════════════════════════════════════════════════════════╝
+
+ *  BLINKO ANALYTICS — PARTICLE SYSTEM CONFIG
+
  *
- * ── PER-SECTION SHAPE CONTROLS ──────────────────────────────────────
- *
+* PER-SECTION SHAPE CONTROLS 
  *  autoRotateY   Degrees added per frame on the Y axis.
  *                  0        = completely static — no rotation at all
  *                  0.10     = slow drift
@@ -131,13 +130,13 @@ export const sectionParticles: SectionParticleConfig[] = [
     sublabel: "Real-time intelligence from your data",
     shape: {
       type: "builtin",
-      builtinShape: "grid",
+      builtinShape: "torus",
       color: "#00C2FF",
       colorFar: "#0033aa",
       particleSize: 1.8,
       autoRotateY: 0.20,
       initialRotationY: 0,
-      particleCount: 1000,
+      particleCount: 320,
       showLines: false,        // pure particles — no lines
     },
   },
