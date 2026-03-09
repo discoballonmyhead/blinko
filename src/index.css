@@ -1,0 +1,117 @@
+/* @import MUST come before all @tailwind directives — PostCSS rule */
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,300;1,9..40,400&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+*, *::before, *::after { box-sizing: border-box; }
+
+:root {
+  --color-bg: #030814;
+  --color-deep: #020710;
+  --color-panel: #080f1f;
+  --color-cyan: #00C2FF;
+  --color-blue: #0066FF;
+  --color-green: #00FFB2;
+  --font-display: 'Syne', sans-serif;
+  --font-body: 'DM Sans', sans-serif;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  background-color: var(--color-bg);
+  color: #ffffff;
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+h1,h2,h3,h4,h5,h6 { font-family: var(--font-display); }
+
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: var(--color-bg); }
+::-webkit-scrollbar-thumb { background: rgba(0,194,255,0.25); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(0,194,255,0.5); }
+
+::selection { background: rgba(0,194,255,0.2); color: var(--color-cyan); }
+
+.gradient-text {
+  background: linear-gradient(135deg, #00C2FF 0%, #0066FF 50%, #00FFB2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.gradient-text-blue {
+  background: linear-gradient(135deg, #00C2FF 0%, #0066FF 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.glass-card {
+  background: rgba(8, 15, 31, 0.85);
+  border: 1px solid rgba(255,255,255,0.06);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+.btn-primary {
+  background: linear-gradient(135deg, #00C2FF, #0066FF);
+  box-shadow: 0 0 30px rgba(0,194,255,0.35);
+  transition: all 0.3s ease;
+  color: #fff;
+  font-weight: 700;
+  border-radius: 12px;
+  padding: 14px 32px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+  cursor: pointer;
+  border: none;
+}
+.btn-primary:hover {
+  box-shadow: 0 0 60px rgba(0,194,255,0.6);
+  transform: translateY(-2px);
+  opacity: 0.95;
+}
+.btn-ghost {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.1);
+  transition: all 0.3s ease;
+  color: rgba(255,255,255,0.8);
+  font-weight: 600;
+  border-radius: 12px;
+  padding: 14px 32px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+  cursor: pointer;
+}
+.btn-ghost:hover {
+  background: rgba(255,255,255,0.08);
+  color: #fff;
+  transform: translateY(-1px);
+}
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 16px;
+  border-radius: 100px;
+  background: rgba(0,194,255,0.08);
+  border: 1px solid rgba(0,194,255,0.18);
+  color: #00C2FF;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-family: var(--font-body);
+}
+canvas.particle-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
