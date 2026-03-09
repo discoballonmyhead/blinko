@@ -5,10 +5,10 @@ import { Footer } from "./components/Footer";
 
 // Lazy-load every page — each becomes its own chunk, users only
 // download the page they actually visit.
-const HomePage           = lazy(() => import("./pages/HomePage").then(m => ({ default: m.HomePage })));
-const ProductsPage       = lazy(() => import("./pages/ProductsPage").then(m => ({ default: m.ProductsPage })));
-const PricingPage        = lazy(() => import("./pages/PricingPage").then(m => ({ default: m.PricingPage })));
-const DemoPage           = lazy(() => import("./pages/demos/DemoPage").then(m => ({ default: m.DemoPage })));
+const HomePage = lazy(() => import("./pages/HomePage").then(m => ({ default: m.HomePage })));
+const ProductsPage = lazy(() => import("./pages/ProductsPage").then(m => ({ default: m.ProductsPage })));
+const PricingPage = lazy(() => import("./pages/PricingPage").then(m => ({ default: m.PricingPage })));
+const DemoPage = lazy(() => import("./pages/demos/DemoPage").then(m => ({ default: m.DemoPage })));
 const PredictiveDemoPage = lazy(() => import("./pages/demos/PredictiveDemoPage").then(m => ({ default: m.PredictiveDemoPage })));
 
 const DEMO_ROUTES = ["/demo/", "/demos/"];
@@ -32,9 +32,9 @@ function MainLayout() {
       <Navbar />
       <main>
         <Routes>
-          <Route path="/"        element={<HomePage />} />
+          <Route path="/" element={<HomePage />} />
           <Route path="/products" element={<ProductsPage />} />
-          <Route path="/pricing"  element={<PricingPage />} />
+          <Route path="/pricing" element={<PricingPage />} />
         </Routes>
       </main>
       <Footer />
@@ -44,13 +44,13 @@ function MainLayout() {
 
 export default function App() {
   return (
-    <BrowserRouter>
+    <BrowserRouter basename="/your-repo-blinko/">
       <ScrollToTop />
       <Suspense fallback={<PageShell />}>
         <Routes>
-          <Route path="/demo/:productId"   element={<DemoPage />} />
-          <Route path="/demos/predictive"  element={<PredictiveDemoPage />} />
-          <Route path="/*"                 element={<MainLayout />} />
+          <Route path="/demo/:productId" element={<DemoPage />} />
+          <Route path="/demos/predictive" element={<PredictiveDemoPage />} />
+          <Route path="/*" element={<MainLayout />} />
         </Routes>
       </Suspense>
     </BrowserRouter>
