@@ -283,12 +283,7 @@ export function ParticleSplitSection({ config, index, children, className = "", 
       }}>
         {/* Text side */}
         <div ref={textRef} style={{ order: isEven ? 1 : 2, opacity: 0 }}>
-          <div style={{ display: "inline-flex", alignItems: "center", gap: 8, marginBottom: 18 }}>
-            <div style={{ width: 6, height: 6, borderRadius: "50%", background: shape.color, boxShadow: `0 0 8px ${shape.color}` }} />
-            <span style={{ color: shape.color, fontSize: 11, fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", fontFamily: "DM Sans,sans-serif" }}>
-              {config.label}
-            </span>
-          </div>
+
           {children}
         </div>
 

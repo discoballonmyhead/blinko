@@ -4,13 +4,16 @@ import { useFadeIn } from "../hooks/useFadeIn";
 import {
   BarChart3, Layout, BrainCircuit,
   Zap, Layers, RefreshCw, Shield,
-  ArrowRight, Linkedin, Send, ChevronRight, MapPin, Mail,
+  ArrowRight, Send, ChevronRight, Mail, Phone,
 } from "lucide-react";
+import { TestimonialMarquee } from "../components/TestimonialMarquee";
 import { AnimatedGridPattern } from "../components/AnimatedGridPattern";
 import { HeroParticleField } from "../components/HeroParticleField";
 import { ParticleSplitSection } from "../components/ParticleSplitSection";
 import { siteConfig } from "../config/site.config";
 import { sectionParticles } from "../config/particles.config";
+import BlurText from "../components/BlurText";
+
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Utility components
@@ -25,12 +28,18 @@ const iconMap: Record<string, React.ReactNode> = {
   RefreshCw: <RefreshCw size={18} />,
   Shield: <Shield size={18} />,
 };
-
-function FadeUp({ children, delay = 0, className = "" }: {
-  children: React.ReactNode; delay?: number; className?: string;
+function FadeUp({ children, delay = 0, className = "", style = {} }: {
+  children: React.ReactNode;
+  delay?: number;
+  className?: string;
+  style?: React.CSSProperties;
 }) {
-  const { ref, style } = useFadeIn({ delay, y: 18 });
-  return <div ref={ref} style={style} className={className}>{children}</div>;
+  const { ref, style: fadeStyle } = useFadeIn({ delay, y: 18 });
+  return (
+    <div ref={ref} style={{ ...fadeStyle, ...style }} className={className}>
+      {children}
+    </div>
+  );
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -44,32 +53,34 @@ function LeadershipSection() {
   const team = siteConfig.leadership;
   const [activeIdx, setActiveIdx] = useState(0);
 
-  // Unique roles for the filter tabs
   const roles = ["All", ...Array.from(new Set(team.map(p => p.role)))];
   const [activeRole, setActiveRole] = useState("All");
 
   const filtered = activeRole === "All" ? team : team.filter(p => p.role === activeRole);
   const active = filtered[activeIdx] ?? filtered[0];
 
-  // Reset selected card when filter changes
   const handleRole = (role: string) => { setActiveRole(role); setActiveIdx(0); };
 
   return (
-    <section id="founder" style={{ position: "relative", zIndex: 2, padding: "88px 64px" }}>
+    <section id="founder" style={{ position: "relative", zIndex: 2, padding: "88px 24px" }}>
       <div style={{ maxWidth: 1100, margin: "0 auto" }}>
         <FadeUp>
-          {/* Header */}
           <div style={{ textAlign: "center", marginBottom: 52 }}>
-            <span className="eyebrow" style={{ marginBottom: 20, display: "inline-flex" }}>Our Team</span>
-            <h2 style={{ fontFamily: "Syne, sans-serif", fontWeight: 800, fontSize: "clamp(1.9rem,3.5vw,2.8rem)", color: "#fff", marginBottom: 14 }}>
-              The People Behind Blinko
-            </h2>
-            <p style={{ color: "rgba(255,255,255,0.48)", fontSize: "1rem", maxWidth: 520, margin: "0 auto" }}>
+            <BlurText
+              text="Our Team"
+              animateBy="words" direction="top" delay={80} stepDuration={0.35}
+              style={{ fontFamily: "Syne, sans-serif", fontWeight: 800, fontSize: "clamp(2.6rem,5vw,4rem)", justifyContent: "center", margin: "0 0 12px", background: "linear-gradient(135deg, #00C2FF, #0066FF)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}
+            />
+            <BlurText
+              text="The people behind Blinko"
+              animateBy="words" direction="top" delay={120} stepDuration={0.32}
+              style={{ fontFamily: "Syne, sans-serif", fontWeight: 700, fontSize: "clamp(1.2rem,2.5vw,1.6rem)", color: "rgba(255,255,255,0.55)", justifyContent: "center", margin: "0 0 14px" }}
+            />
+            <p style={{ color: "rgba(255,255,255,0.35)", fontSize: "0.95rem", maxWidth: 520, margin: "0 auto" }}>
               A team of data scientists, engineers, and strategists obsessed with turning data into decisions.
             </p>
           </div>
 
-          {/* Role filter tabs — only shown when more than one role exists */}
           {roles.length > 2 && (
             <div style={{ display: "flex", justifyContent: "center", gap: 8, marginBottom: 44, flexWrap: "wrap" }}>
               {roles.map(role => (
@@ -87,13 +98,11 @@ function LeadershipSection() {
             </div>
           )}
 
-          {/* Layout: card grid left + expanded detail right (single person → centred card) */}
           {filtered.length === 1 ? (
-            // Single person — wide centred card
             <PersonCard person={filtered[0]} expanded />
           ) : (
             <div style={{ display: "grid", gridTemplateColumns: "280px 1fr", gap: 24, alignItems: "start" }}>
-              {/* Card list */}
+              {/* Sidebar list */}
               <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
                 {filtered.map((person, i) => (
                   <button key={person.name} onClick={() => setActiveIdx(i)} style={{
@@ -104,7 +113,6 @@ function LeadershipSection() {
                     borderColor: activeIdx === i ? (person.accent ?? "rgba(0,194,255,0.35)") : "rgba(255,255,255,0.07)",
                     boxShadow: activeIdx === i ? `0 0 20px ${(person.accent ?? "#00C2FF")}18` : "none",
                   }}>
-                    {/* Mini avatar */}
                     {person.image ? (
                       <img src={person.image} alt={person.name}
                         style={{ width: 44, height: 44, borderRadius: 10, objectFit: "cover", flexShrink: 0 }} />
@@ -132,7 +140,7 @@ function LeadershipSection() {
                 ))}
               </div>
 
-              {/* Expanded detail panel */}
+              {/* Active card — full height portrait */}
               {active && <PersonCard person={active} expanded key={active.name} />}
             </div>
           )}
@@ -141,58 +149,67 @@ function LeadershipSection() {
     </section>
   );
 }
-
-// Individual person card
 function PersonCard({ person, expanded }: {
   person: typeof siteConfig.leadership[0];
   expanded?: boolean;
 }) {
   const accent = person.accent ?? "#00C2FF";
+
   return (
     <div style={{
       background: "rgba(8,15,31,0.88)", backdropFilter: "blur(16px)",
       border: `1px solid ${accent}20`,
-      borderRadius: 24, padding: expanded ? "44px 48px" : "28px 32px",
-      display: "flex", gap: 40, alignItems: "flex-start", flexWrap: "wrap",
+      borderRadius: 24,
+      display: "flex",
+      flexDirection: "row",
+      alignItems: "stretch",
       boxShadow: `0 0 40px ${accent}0a`,
       transition: "all 0.3s ease",
+      overflow: "hidden",
+      minHeight: expanded ? 360 : 160,
     }}>
-      {/* Avatar */}
-      <div style={{ flexShrink: 0 }}>
+      {/* Left strip */}
+      <div style={{ width: "30%", flexShrink: 0, position: "relative", minHeight: expanded ? 360 : 160 }}>
         {person.image ? (
           <img src={person.image} alt={person.name} style={{
-            width: expanded ? 130 : 90, height: expanded ? 130 : 90,
-            borderRadius: 16, objectFit: "cover",
-            border: `1px solid ${accent}30`,
+            position: "absolute", inset: 0,
+            width: "100%", height: "100%",
+            objectFit: "cover",
+            objectPosition: "center top",
+            display: "block",
           }} />
         ) : (
           <div style={{
-            width: expanded ? 130 : 90, height: expanded ? 130 : 90, borderRadius: 16,
-            background: `linear-gradient(135deg, ${accent}18, ${accent}06)`,
-            border: `1px solid ${accent}28`,
+            position: "absolute", inset: 0,
+            background: `linear-gradient(160deg, ${accent}22, ${accent}06)`,
             display: "flex", alignItems: "center", justifyContent: "center",
             fontFamily: "Syne, sans-serif", fontWeight: 800,
-            fontSize: expanded ? "3rem" : "2rem", color: accent,
+            fontSize: expanded ? "3.5rem" : "2.5rem",
+            color: `${accent}80`,
           }}>
             {person.name[0]}
           </div>
         )}
       </div>
 
-      {/* Text */}
-      <div style={{ flex: 1, minWidth: 240 }}>
+      {/* Right content */}
+      <div style={{ flex: 1, minWidth: 0, padding: expanded ? "36px 36px" : "24px 28px" }}>
         <span style={{ color: accent, fontSize: 11, fontWeight: 700, letterSpacing: "0.13em", textTransform: "uppercase" }}>
           {person.role}
         </span>
-        <h3 style={{ fontFamily: "Syne, sans-serif", fontWeight: 800, fontSize: expanded ? "1.85rem" : "1.3rem", color: "#fff", marginTop: 8, marginBottom: 4 }}>
+        <h3 style={{
+          fontFamily: "Syne, sans-serif", fontWeight: 800,
+          fontSize: expanded ? "1.85rem" : "1.3rem",
+          color: "#fff", marginTop: 8, marginBottom: 4,
+        }}>
           {person.name}
         </h3>
         <p style={{ color: "rgba(255,255,255,0.32)", fontSize: 14, marginBottom: 18 }}>
           {person.title}
         </p>
-        {expanded && (
-          <p style={{ color: "rgba(255,255,255,0.6)", fontSize: "0.95rem", lineHeight: 1.8, marginBottom: 26, maxWidth: 560 }}>
-            {/*person.bio*/}
+        {expanded && person.bio && (
+          <p style={{ color: "rgba(255,255,255,0.6)", fontSize: "0.95rem", lineHeight: 1.8, marginBottom: 26, maxWidth: 480 }}>
+            {person.bio}
           </p>
         )}
         {person.linkedin && (
@@ -200,16 +217,18 @@ function PersonCard({ person, expanded }: {
             display: "inline-flex", alignItems: "center", gap: 8, padding: "9px 20px",
             borderRadius: 10, background: `${accent}14`, border: `1px solid ${accent}30`,
             color: accent, fontSize: 13, fontWeight: 700, textDecoration: "none",
-            transition: "all 0.2s ease",
           }}>
-            <Linkedin size={13} /> LinkedIn
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z" />
+              <rect x="2" y="9" width="4" height="12" />
+              <circle cx="4" cy="4" r="2" />
+            </svg> LinkedIn
           </a>
         )}
       </div>
     </div>
   );
 }
-
 // ── Product Content ───────────────────────────────────────────────────────────
 
 function ProductContent({ product }: { product: typeof siteConfig.products[0] }) {
@@ -271,8 +290,6 @@ function ProductContent({ product }: { product: typeof siteConfig.products[0] })
 
 export function HomePage() {
   const [formData, setFormData] = useState({ name: "", email: "", message: "" });
-  const [formSent, setFormSent] = useState(false);
-  const handleSubmit = (e: React.FormEvent) => { e.preventDefault(); setFormSent(true); };
 
   return (
     <>
@@ -299,12 +316,7 @@ export function HomePage() {
           }} />
 
           <div style={{ maxWidth: 860, margin: "0 auto", width: "100%", paddingTop: 120, paddingBottom: 80 }}>
-            <div>
-              <span className="eyebrow" style={{ marginBottom: 32, display: "inline-flex" }}>
-                <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#00C2FF", flexShrink: 0 }} />
-                Data Analytics · BI · Machine Learning
-              </span>
-            </div>
+            {/**i removed the span for shwoing what it is it looked AI uglyu bS */}
 
             <h1
               style={{
@@ -335,27 +347,12 @@ export function HomePage() {
                 {siteConfig.hero.secondaryCTA.label}
               </Link>
             </div>
-
-            {/* Stats row */}
-            <div
-              style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 12 }}>
-              {siteConfig.stats.map((s, i) => (
-                <div key={i} style={{
-                  background: "rgba(255,255,255,0.025)",
-                  border: "1px solid rgba(255,255,255,0.06)",
-                  borderRadius: 14, padding: "16px 18px",
-                  backdropFilter: "blur(10px)",
-                }}>
-                  <div className="gradient-text-blue" style={{
-                    fontFamily: "Syne, sans-serif", fontSize: "1.65rem", fontWeight: 800,
-                  }}>{s.value}</div>
-                  <div style={{ color: "rgba(255,255,255,0.32)", fontSize: 12, marginTop: 3 }}>{s.label}</div>
-                </div>
-              ))}
-            </div>
+            {/*I removed the stats row, it looked horrible */}
           </div>
 
         </section>
+
+
 
         {/* ══════════════════════════ PRODUCT SECTIONS ══════════════════════════
          *
@@ -384,39 +381,43 @@ export function HomePage() {
         })}
 
         {/* ══════════════════════════ WHY BLINKO ══════════════════════════ */}
-        <section id="about" style={{ position: "relative", zIndex: 2, padding: "96px 64px" }}>
-          <div style={{
-            maxWidth: 1100, margin: "0 auto",
-            background: "rgba(2,9,18,0.82)", backdropFilter: "blur(24px)",
-            WebkitBackdropFilter: "blur(24px)",
-            border: "1px solid rgba(255,255,255,0.07)",
-            borderRadius: 28, padding: "64px 56px",
-          }}>
-            <FadeUp>
-              <div style={{ textAlign: "center", marginBottom: 56 }}>
-                <span className="eyebrow mb-5 inline-flex">Why Blinko</span>
-                <h2 style={{ fontFamily: "Syne, sans-serif", fontSize: "clamp(2rem,4vw,3rem)", fontWeight: 800, marginTop: 16 }}>
-                  Built on four fundamentals
-                </h2>
-              </div>
-            </FadeUp>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 20 }}>
+        <section id="about" style={{ position: "relative", zIndex: 2, padding: "100px 24px" }}>
+          <div style={{ maxWidth: 1100, margin: "0 auto" }}>
+            <div style={{ textAlign: "center", marginBottom: 64 }}>
+              <BlurText
+                text="Why Blinko"
+                animateBy="words" direction="top" delay={80} stepDuration={0.35}
+                style={{ fontFamily: "Syne, sans-serif", fontWeight: 800, fontSize: "clamp(2.6rem,5vw,4rem)", justifyContent: "center", margin: "0 0 12px", background: "linear-gradient(135deg, #79e0ff, #00c3ff)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}
+              />
+              <BlurText
+                text="Built on four fundamentals"
+                animateBy="words" direction="top" delay={120} stepDuration={0.32}
+                style={{ fontFamily: "Syne, sans-serif", fontWeight: 700, fontSize: "clamp(1.2rem,2.5vw,1.6rem)", color: "rgba(255,255,255,0.55)", justifyContent: "center", margin: 0 }}
+              />
+            </div>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 16 }}>
               {siteConfig.pillars.map((p, i) => (
                 <FadeUp key={p.title} delay={i * 0.1}>
                   <div style={{
-                    background: "rgba(255,255,255,0.025)", border: "1px solid rgba(255,255,255,0.06)",
-                    borderRadius: 18, padding: "28px 22px", textAlign: "center",
+                    background: "rgba(8,15,31,0.6)",
+                    border: "1px solid rgba(255,255,255,0.06)",
+                    borderRadius: 20, padding: "32px 24px", textAlign: "center",
+                    height: "100%",
                   }}>
                     <div style={{
-                      width: 48, height: 48, borderRadius: 12,
-                      background: "rgba(0,194,255,0.08)", color: "#00C2FF",
+                      width: 44, height: 44, borderRadius: 10,
+                      background: "rgba(0,194,255,0.07)", color: "#00C2FF",
                       display: "flex", alignItems: "center", justifyContent: "center",
-                      margin: "0 auto 14px",
+                      margin: "0 auto 16px",
                     }}>
                       {iconMap[p.icon]}
                     </div>
-                    <h3 style={{ fontFamily: "Syne, sans-serif", fontWeight: 800, fontSize: "1.05rem", color: "#fff", marginBottom: 8 }}>{p.title}</h3>
-                    <p style={{ color: "rgba(255,255,255,0.35)", fontSize: "0.85rem", lineHeight: 1.65 }}>{p.description}</p>
+                    <div style={{ fontFamily: "Syne, sans-serif", fontWeight: 700, fontSize: "1rem", color: "#fff", marginBottom: 8 }}>
+                      {p.title}
+                    </div>
+                    <div style={{ color: "rgba(255,255,255,0.3)", fontSize: "0.83rem", lineHeight: 1.65 }}>
+                      {p.description}
+                    </div>
                   </div>
                 </FadeUp>
               ))}
@@ -424,51 +425,146 @@ export function HomePage() {
           </div>
         </section>
 
-        {/* ══════════════════════════ CASE STUDIES ══════════════════════════ */}
-        <section style={{ position: "relative", zIndex: 2, padding: "80px 64px" }}>
+        {/* ══════════════════════════ CASE STUDIES BENTO ══════════════════════════ */}
+        <section style={{ position: "relative", zIndex: 2, padding: "80px 24px" }}>
           <div style={{ maxWidth: 1100, margin: "0 auto" }}>
             <FadeUp>
-              <span className="eyebrow section-line mb-5 inline-flex">Success Stories</span>
-              <h2 style={{ fontFamily: "Syne, sans-serif", fontSize: "clamp(2rem,4vw,3rem)", fontWeight: 800, marginTop: 16, marginBottom: 48 }}>
-                Results that speak
-              </h2>
+              <BlurText
+                text="Case Studies & Feats"
+                animateBy="words" direction="top" delay={80} stepDuration={0.35}
+                style={{ fontFamily: "Syne, sans-serif", fontWeight: 800, fontSize: "clamp(2.6rem,5vw,4rem)", justifyContent: "flex-start", margin: "0 0 12px", background: "linear-gradient(135deg, #00C2FF, #0066FF)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}
+              />
+              <BlurText
+                text="Results that speak for themselves"
+                animateBy="words" direction="top" delay={120} stepDuration={0.32}
+                style={{ fontFamily: "Syne, sans-serif", fontWeight: 700, fontSize: "clamp(1.2rem,2.5vw,1.6rem)", color: "rgba(255,255,255,0.55)", justifyContent: "flex-start", margin: "0 0 48px" }}
+              />
             </FadeUp>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 20 }}>
-              {siteConfig.caseStudies.map((cs, i) => (
-                <FadeUp key={cs.client} delay={i * 0.12}>
+
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(12, 1fr)", gap: 16 }}>
+
+              {/* Case study 1 — large, col 5 */}
+              <div style={{ gridColumn: "span 5" }}>
+                <FadeUp delay={0} style={{ height: "100%" }}>
                   <div style={{
-                    background: "rgba(8,15,31,0.88)", backdropFilter: "blur(12px)",
-                    border: "1px solid rgba(255,255,255,0.07)", borderRadius: 20, padding: "36px 30px",
+                    background: "rgba(8,15,31,0.88)", border: "1px solid rgba(255,255,255,0.07)",
+                    borderRadius: 24, padding: "44px 40px", height: "100%",
+                    display: "flex", flexDirection: "column", justifyContent: "space-between",
                   }}>
-                    <div className="gradient-text" style={{ fontFamily: "Syne, sans-serif", fontSize: "3.2rem", fontWeight: 800, lineHeight: 1 }}>{cs.metric}</div>
-                    <div style={{ color: "#00FFB2", fontSize: 12, fontWeight: 700, margin: "4px 0 16px", letterSpacing: "0.05em" }}>{cs.label}</div>
-                    <p style={{ color: "rgba(255,255,255,0.4)", fontSize: "0.9rem", lineHeight: 1.7, marginBottom: 18 }}>{cs.description}</p>
-                    <span style={{ color: "rgba(255,255,255,0.18)", fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase" }}>{cs.client}</span>
+                    <div>
+                      <div className="gradient-text" style={{ fontFamily: "Syne, sans-serif", fontSize: "clamp(3.5rem,6vw,5rem)", fontWeight: 800, lineHeight: 1 }}>
+                        {siteConfig.caseStudies[0]?.metric}
+                      </div>
+                      <div style={{ color: "#00FFB2", fontSize: 12, fontWeight: 700, margin: "8px 0 20px", letterSpacing: "0.08em", textTransform: "uppercase" }}>
+                        {siteConfig.caseStudies[0]?.label}
+                      </div>
+                      <p style={{ color: "rgba(255,255,255,0.45)", fontSize: "0.95rem", lineHeight: 1.75 }}>
+                        {siteConfig.caseStudies[0]?.description}
+                      </p>
+                    </div>
+                    <span style={{ color: "rgba(255,255,255,0.15)", fontSize: 11, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", marginTop: 28, display: "block" }}>
+                      {siteConfig.caseStudies[0]?.client}
+                    </span>
                   </div>
                 </FadeUp>
+              </div>
+
+              {/* Case study 2 — col 4 */}
+              <div style={{ gridColumn: "span 4" }}>
+                <FadeUp delay={0.1} style={{ height: "100%" }}>
+                  <div style={{
+                    background: "rgba(0,194,255,0.04)", border: "1px solid rgba(0,194,255,0.12)",
+                    borderRadius: 24, padding: "44px 36px", height: "100%",
+                    display: "flex", flexDirection: "column", justifyContent: "space-between",
+                  }}>
+                    <div>
+                      <div className="gradient-text" style={{ fontFamily: "Syne, sans-serif", fontSize: "clamp(3.5rem,6vw,5rem)", fontWeight: 800, lineHeight: 1 }}>
+                        {siteConfig.caseStudies[1]?.metric}
+                      </div>
+                      <div style={{ color: "#00FFB2", fontSize: 12, fontWeight: 700, margin: "8px 0 20px", letterSpacing: "0.08em", textTransform: "uppercase" }}>
+                        {siteConfig.caseStudies[1]?.label}
+                      </div>
+                      <p style={{ color: "rgba(255,255,255,0.45)", fontSize: "0.95rem", lineHeight: 1.75 }}>
+                        {siteConfig.caseStudies[1]?.description}
+                      </p>
+                    </div>
+                    <span style={{ color: "rgba(255,255,255,0.15)", fontSize: 11, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", marginTop: 28, display: "block" }}>
+                      {siteConfig.caseStudies[1]?.client}
+                    </span>
+                  </div>
+                </FadeUp>
+              </div>
+
+              {/* Case study 3 — tall, col 3, row span 2 */}
+              <div style={{ gridColumn: "span 3", gridRow: "span 2" }}>
+                <FadeUp delay={0.15} style={{ height: "100%" }}>
+                  <div style={{
+                    background: "linear-gradient(160deg, rgba(0,102,255,0.12), rgba(0,194,255,0.04))",
+                    border: "1px solid rgba(0,102,255,0.18)",
+                    borderRadius: 24, padding: "40px 28px", height: "100%",
+                    display: "flex", flexDirection: "column", justifyContent: "space-between",
+                  }}>
+                    <div>
+                      <div className="gradient-text" style={{ fontFamily: "Syne, sans-serif", fontSize: "clamp(3rem,5vw,4.2rem)", fontWeight: 800, lineHeight: 1 }}>
+                        {siteConfig.caseStudies[2]?.metric}
+                      </div>
+                      <div style={{ color: "#00FFB2", fontSize: 12, fontWeight: 700, margin: "8px 0 20px", letterSpacing: "0.08em", textTransform: "uppercase" }}>
+                        {siteConfig.caseStudies[2]?.label}
+                      </div>
+                      <p style={{ color: "rgba(255,255,255,0.45)", fontSize: "0.88rem", lineHeight: 1.75 }}>
+                        {siteConfig.caseStudies[2]?.description}
+                      </p>
+                    </div>
+                    <span style={{ color: "rgba(255,255,255,0.15)", fontSize: 11, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", marginTop: 28, display: "block" }}>
+                      {siteConfig.caseStudies[2]?.client}
+                    </span>
+                  </div>
+                </FadeUp>
+              </div>
+
+              {/* Bottom row — 3 individual stat boxes + one combined */}
+              {siteConfig.stats.slice(0, 3).map((s, i) => (
+                <div key={i} style={{ gridColumn: "span 3" }}>
+                  <FadeUp delay={0.2 + i * 0.08} style={{ height: "100%" }}>
+                    <div style={{
+                      background: "rgba(8,15,31,0.6)", border: "1px solid rgba(255,255,255,0.06)",
+                      borderRadius: 24, padding: "32px 28px", height: "100%",
+                      display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", textAlign: "center",
+                    }}>
+                      <div className="gradient-text" style={{ fontFamily: "Syne, sans-serif", fontSize: "2.6rem", fontWeight: 800, lineHeight: 1 }}>
+                        {s.value}
+                      </div>
+                      <div style={{ color: "rgba(255,255,255,0.35)", fontSize: "0.78rem", marginTop: 10, lineHeight: 1.5, maxWidth: 120 }}>
+                        {s.label}
+                      </div>
+                    </div>
+                  </FadeUp>
+                </div>
               ))}
+
             </div>
           </div>
         </section>
 
         {/* ══════════════════════════ TESTIMONIALS ══════════════════════════ */}
-        <section style={{ position: "relative", zIndex: 2, padding: "60px 64px" }}>
-          <div style={{ maxWidth: 700, margin: "0 auto" }}>
-            {siteConfig.testimonials.map((t, i) => (
-              <FadeUp key={i}>
-                <div style={{
-                  background: "rgba(8,15,31,0.88)", backdropFilter: "blur(16px)",
-                  border: "1px solid rgba(255,255,255,0.07)", borderRadius: 24, padding: "52px 48px",
-                  marginBottom: 24,
-                }}>
-                  <div style={{ fontSize: "4rem", color: "rgba(0,194,255,0.15)", fontFamily: "Georgia,serif", lineHeight: 0.6, marginBottom: 20 }}>"</div>
-                  <p style={{ color: "rgba(255,255,255,0.7)", fontSize: "1.05rem", lineHeight: 1.8, marginBottom: 28, fontStyle: "italic" }}>{t.quote}</p>
-                  <p style={{ color: "#fff", fontFamily: "Syne, sans-serif", fontWeight: 700 }}>{t.author}</p>
-                  <p style={{ color: "rgba(255,255,255,0.3)", fontSize: 13, marginTop: 3 }}>{t.company}</p>
-                </div>
-              </FadeUp>
-            ))}
+        <section style={{ position: "relative", zIndex: 2, padding: "80px 0" }}>
+          <div style={{ maxWidth: 1100, margin: "0 auto", paddingBottom: 48 }}>
+            <FadeUp>
+              <div style={{ textAlign: "center", marginBottom: 52, padding: "0 24px" }}>
+                <BlurText
+                  text="What clients say"
+                  animateBy="words" direction="top" delay={80} stepDuration={0.35}
+                  style={{ fontFamily: "Syne, sans-serif", fontWeight: 800, fontSize: "clamp(2.6rem,5vw,4rem)", justifyContent: "center", margin: "0 0 12px", background: "linear-gradient(135deg, #00C2FF, #0066FF)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}
+                />
+                <BlurText
+                  text="Trusted by data-driven teams worldwide"
+                  animateBy="words" direction="top" delay={120} stepDuration={0.32}
+                  style={{ fontFamily: "Syne, sans-serif", fontWeight: 700, fontSize: "clamp(1.2rem,2.5vw,1.6rem)", color: "rgba(255,255,255,0.55)", justifyContent: "center", margin: 0 }}
+                />
+              </div>
+            </FadeUp>
           </div>
+          <TestimonialMarquee />
         </section>
 
         {/* ══════════════════════════ FOUNDER ══════════════════════════ */}
@@ -476,128 +572,94 @@ export function HomePage() {
         <LeadershipSection />
 
         {/* ══════════════════════════ PRICING ══════════════════════════ */}
-        <section id="pricing" style={{ position: "relative", zIndex: 2, padding: "88px 64px" }}>
-          <div style={{ maxWidth: 1100, margin: "0 auto" }}>
-            <FadeUp>
-              <div style={{ textAlign: "center", marginBottom: 56 }}>
-                <span className="eyebrow mb-5 inline-flex">Pricing</span>
-                <h2 style={{ fontFamily: "Syne, sans-serif", fontSize: "clamp(2rem,4vw,3rem)", fontWeight: 800, marginTop: 16 }}>
-                  Simple, transparent pricing
-                </h2>
-              </div>
-            </FadeUp>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 20 }}>
-              {siteConfig.pricing.plans.map((plan, i) => (
-                <FadeUp key={plan.name} delay={i * 0.1}>
-                  <div style={{
-                    background: plan.highlighted ? "rgba(0,94,255,0.12)" : "rgba(8,15,31,0.88)",
-                    border: plan.highlighted ? "1px solid rgba(0,194,255,0.3)" : "1px solid rgba(255,255,255,0.07)",
-                    borderRadius: 22, padding: "36px 30px",
-                    position: "relative", backdropFilter: "blur(12px)",
-                  }}>
-                    {plan.highlighted && (
-                      <div style={{
-                        position: "absolute", top: -12, left: "50%", transform: "translateX(-50%)",
-                        background: "linear-gradient(135deg, #00C2FF, #0066FF)",
-                        color: "#fff", fontSize: 10, fontWeight: 800, letterSpacing: "0.1em",
-                        textTransform: "uppercase", padding: "4px 14px", borderRadius: 20,
-                      }}>Most Popular</div>
-                    )}
-                    <h3 style={{ fontFamily: "Syne, sans-serif", fontWeight: 800, fontSize: "1.2rem", color: "#fff", marginBottom: 6 }}>{plan.name}</h3>
-                    <div style={{ marginBottom: 20 }}>
-                      <span style={{ fontFamily: "Syne, sans-serif", fontSize: "2.8rem", fontWeight: 800, color: "#fff" }}>{plan.price}</span>
-                      {plan.period && <span style={{ color: "rgba(255,255,255,0.35)", fontSize: 14, marginLeft: 4 }}>{plan.period}</span>}
-                    </div>
-                    <ul style={{ display: "flex", flexDirection: "column", gap: 9, marginBottom: 28 }}>
-                      {plan.features.map((f: string) => (
-                        <li key={f} style={{ display: "flex", alignItems: "flex-start", gap: 8, color: "rgba(255,255,255,0.55)", fontSize: "0.88rem" }}>
-                          <ChevronRight size={12} style={{ color: "#00C2FF", flexShrink: 0, marginTop: 2 }} />{f}
-                        </li>
-                      ))}
-                    </ul>
-                    <button style={{
-                      width: "100%", padding: "12px 20px", borderRadius: 10, border: "none",
-                      background: plan.highlighted ? "linear-gradient(135deg,#00C2FF,#0066FF)" : "rgba(255,255,255,0.06)",
-                      color: "#fff", fontWeight: 700, fontSize: 14, cursor: "pointer",
-                    }}>
-                      {plan.cta}
-                    </button>
-                  </div>
-                </FadeUp>
-              ))}
-            </div>
-          </div>
-        </section>
+
 
         {/* ══════════════════════════ CONTACT ══════════════════════════ */}
-        <section id="contact" style={{ position: "relative", zIndex: 2, padding: "80px 64px 120px" }}>
-          <div style={{ maxWidth: 640, margin: "0 auto" }}>
+        <section id="contact" style={{ position: "relative", zIndex: 2, padding: "80px 24px 120px" }}>
+          <div style={{ maxWidth: 580, margin: "0 auto" }}>
             <FadeUp>
               <div style={{ textAlign: "center", marginBottom: 48 }}>
-                <h2 style={{ fontFamily: "Syne, sans-serif", fontSize: "clamp(1.8rem,3.5vw,2.8rem)", fontWeight: 800, marginBottom: 12 }}>
-                  {siteConfig.contact.headline}
-                </h2>
-                <p style={{ color: "rgba(255,255,255,0.4)", fontSize: "1rem" }}>{siteConfig.contact.subheadline}</p>
+                <BlurText
+                  text="Get in touch"
+                  animateBy="words" direction="top" delay={80} stepDuration={0.35}
+                  style={{ fontFamily: "Syne, sans-serif", fontWeight: 800, fontSize: "clamp(2.6rem,5vw,4rem)", justifyContent: "center", margin: "0 0 12px", background: "linear-gradient(135deg, #00C2FF, #0066FF)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}
+                />
+                <BlurText
+                  text={siteConfig.contact.subheadline}
+                  animateBy="words" direction="top" delay={120} stepDuration={0.32}
+                  style={{ fontFamily: "Syne, sans-serif", fontWeight: 700, fontSize: "clamp(1.2rem,2.5vw,1.6rem)", color: "rgba(255,255,255,0.55)", justifyContent: "center", margin: 0 }}
+                />
               </div>
 
-              {formSent ? (
-                <div style={{
-                  background: "rgba(8,15,31,0.9)", border: "1px solid rgba(0,255,178,0.2)",
-                  borderRadius: 20, padding: "64px 40px", textAlign: "center",
+              {/* Contact info pills */}
+              <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: 12, marginBottom: 40 }}>
+                <a href={`mailto:${siteConfig.contact.email}`} style={{
+                  display: "inline-flex", alignItems: "center", gap: 8,
+                  padding: "10px 20px", borderRadius: 100,
+                  background: "rgba(0,194,255,0.08)", border: "1px solid rgba(0,194,255,0.2)",
+                  color: "#00C2FF", fontSize: 14, textDecoration: "none", fontWeight: 500,
                 }}>
-                  <div style={{
-                    width: 60, height: 60, borderRadius: "50%", background: "rgba(0,255,178,0.1)",
-                    display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 20px",
+                  <Mail size={14} /> {siteConfig.contact.email}
+                </a>
+                {siteConfig.contact.phone && (
+                  <a href={`tel:${siteConfig.contact.phone}`} style={{
+                    display: "inline-flex", alignItems: "center", gap: 8,
+                    padding: "10px 20px", borderRadius: 100,
+                    background: "rgba(0,194,255,0.08)", border: "1px solid rgba(0,194,255,0.2)",
+                    color: "#00C2FF", fontSize: 14, textDecoration: "none", fontWeight: 500,
                   }}>
-                    <Send style={{ color: "#00FFB2" }} size={26} />
-                  </div>
-                  <h3 style={{ fontFamily: "Syne, sans-serif", fontWeight: 800, fontSize: "1.4rem", color: "#fff", marginBottom: 8 }}>Message sent!</h3>
-                  <p style={{ color: "rgba(255,255,255,0.4)" }}>We'll get back to you within 24 hours.</p>
-                </div>
-              ) : (
-                <form onSubmit={handleSubmit} style={{
-                  background: "rgba(8,15,31,0.88)", backdropFilter: "blur(16px)",
-                  border: "1px solid rgba(255,255,255,0.07)", borderRadius: 22, padding: "44px 40px",
-                }}>
-                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginBottom: 16 }}>
-                    {[
-                      { label: "Name", key: "name", type: "text", ph: "Your name" },
-                      { label: "Email", key: "email", type: "email", ph: "you@company.com" },
-                    ].map(f => (
-                      <div key={f.key}>
-                        <label style={{ display: "block", color: "rgba(255,255,255,0.3)", fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 8 }}>{f.label}</label>
-                        <input type={f.type} required placeholder={f.ph}
-                          value={formData[f.key as "name" | "email"]}
-                          onChange={e => setFormData({ ...formData, [f.key]: e.target.value })}
-                          style={{ width: "100%", background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 10, padding: "12px 16px", color: "#fff", fontSize: 14, outline: "none", boxSizing: "border-box" }} />
-                      </div>
-                    ))}
-                  </div>
-                  <div style={{ marginBottom: 24 }}>
+                    <Phone size={14} /> {siteConfig.contact.phone}
+                  </a>
+                )}
+              </div>
+
+              {/* Simple mailto form */}
+              <div style={{
+                background: "rgba(8,15,31,0.88)", backdropFilter: "blur(16px)",
+                border: "1px solid rgba(255,255,255,0.07)", borderRadius: 22, padding: "40px 36px",
+              }}>
+                <div style={{ display: "flex", flexDirection: "column", gap: 16, marginBottom: 20 }}>
+                  {[
+                    { label: "Name", key: "name", type: "text", placeholder: "Your name" },
+                    { label: "Email", key: "email", type: "email", placeholder: "you@company.com" },
+                  ].map(f => (
+                    <div key={f.key}>
+                      <label style={{ display: "block", color: "rgba(255,255,255,0.3)", fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 8 }}>{f.label}</label>
+                      <input
+                        type={f.type}
+                        placeholder={f.placeholder}
+                        value={formData[f.key as "name" | "email"]}
+                        onChange={e => setFormData({ ...formData, [f.key]: e.target.value })}
+                        style={{ width: "100%", background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 10, padding: "12px 16px", color: "#fff", fontSize: 14, outline: "none", boxSizing: "border-box" }}
+                      />
+                    </div>
+                  ))}
+                  <div>
                     <label style={{ display: "block", color: "rgba(255,255,255,0.3)", fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 8 }}>Message</label>
-                    <textarea required rows={5} placeholder="Tell us about your data needs..."
-                      value={formData.message} onChange={e => setFormData({ ...formData, message: e.target.value })}
-                      style={{ width: "100%", background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 10, padding: "12px 16px", color: "#fff", fontSize: 14, outline: "none", resize: "none", boxSizing: "border-box" }} />
+                    <textarea
+                      rows={4}
+                      placeholder="Tell us about your data needs..."
+                      value={formData.message}
+                      onChange={e => setFormData({ ...formData, message: e.target.value })}
+                      style={{ width: "100%", background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 10, padding: "12px 16px", color: "#fff", fontSize: 14, outline: "none", resize: "none", boxSizing: "border-box" }}
+                    />
                   </div>
-                  <button type="submit" className="btn-primary" style={{ width: "100%", justifyContent: "center" }}>
-                    Send Message <Send size={14} />
-                  </button>
-                  <div style={{ marginTop: 24, display: "flex", flexWrap: "wrap", justifyContent: "center", gap: 20 }}>
-                    {siteConfig.contact.offices.map((o: { city: string; address: string }) => (
-                      <div key={o.city} style={{ display: "flex", alignItems: "center", gap: 6, color: "rgba(255,255,255,0.22)", fontSize: 12 }}>
-                        <MapPin size={11} style={{ color: "#00C2FF" }} />{o.address}
-                      </div>
-                    ))}
-                    <a href={`mailto:${siteConfig.contact.email}`} style={{ display: "flex", alignItems: "center", gap: 6, color: "rgba(255,255,255,0.22)", fontSize: 12, textDecoration: "none" }}>
-                      <Mail size={11} style={{ color: "#00C2FF" }} />{siteConfig.contact.email}
-                    </a>
-                  </div>
-                </form>
-              )}
+                </div>
+                <button
+                  onClick={() => {
+                    const subject = encodeURIComponent(`Enquiry from ${formData.name || "website"}`);
+                    const body = encodeURIComponent(`Name: ${formData.name}\nEmail: ${formData.email}\n\n${formData.message}`);
+                    window.location.href = `mailto:${siteConfig.contact.email}?subject=${subject}&body=${body}`;
+                  }}
+                  className="btn-primary"
+                  style={{ width: "100%", justifyContent: "center" }}
+                >
+                  Send Message <Send size={14} />
+                </button>
+              </div>
             </FadeUp>
           </div>
         </section>
-
       </div>
     </>
   );

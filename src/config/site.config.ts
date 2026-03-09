@@ -8,8 +8,8 @@ export const siteConfig = {
   brand: {
     name: "Blinko",
     tagline: "Analytics",
-    logo: "/images/logo_header.png",
-    favicon: "/images/logo.png",
+    logo: `${import.meta.env.BASE_URL}images/logo_header.png`,
+    favicon: `${import.meta.env.BASE_URL}images/logo.png`,
   },
 
   // ─── Navigation ──────────────────────────────────────────
@@ -22,6 +22,7 @@ export const siteConfig = {
       { label: "Pricing", path: "/pricing" },
       { label: "About", path: "/#about" },
       { label: "Contact", path: "/#contact" },
+
     ],
   },
 
@@ -89,7 +90,7 @@ export const siteConfig = {
       demoVideo: "/videos/bi-demo.mp4",  // ← drop your .mp4 in /public/videos/
       demoPage: null as string | null,
       icon: "Layout",
-      color: "#0066FF",
+      color: "#00FFB2",
     },
     {
       id: "blink-predictive",
@@ -108,7 +109,7 @@ export const siteConfig = {
       demoVideo: null as string | null,
       demoPage: "/demos/predictive",  // ← internal route, see src/pages/demos/
       icon: "BrainCircuit",
-      color: "#00FFB2",
+      color: "#6404ff",
     },
   ],
 
@@ -123,10 +124,68 @@ export const siteConfig = {
   // ─── Testimonials ─────────────────────────────────────────
   testimonials: [
     {
-      quote: "This work is an outstanding example of thorough analysis and strategic insight. The professionalism and expertise evident in this work are truly commendable.",
+      quote: "This work is an outstanding example of thorough analysis and strategic insight. The professionalism and expertise are truly commendable.",
       author: "Chris M.",
+      role: "Operations Director",
       company: "Germany",
       avatar: null,
+      source: "Fiverr",
+    },
+    {
+      quote: "Dror delivered a machine learning pipeline that cut our processing time in half. Exceptional technical depth and clear communication throughout.",
+      author: "Sarah K.",
+      role: "Head of Product",
+      company: "TechFlow Inc.",
+      avatar: null,
+      source: "Fiverr",
+    },
+    {
+      quote: "The dashboard Blinko built gave us visibility we never had before. Our team actually uses it every day — that says everything.",
+      author: "James R.",
+      role: "CEO",
+      company: "Alcrest Partners",
+      avatar: null,
+      source: "Upwork",
+    },
+    {
+      quote: "Incredibly knowledgeable in both statistics and business context. Rare combination. Will absolutely work together again.",
+      author: "Priya S.",
+      role: "Data Lead",
+      company: "Fractal Analytics",
+      avatar: null,
+      source: "LinkedIn",
+    },
+    {
+      quote: "The predictive model Blinko built for our sales pipeline improved forecast accuracy by over 30%. Highly recommended.",
+      author: "Marc D.",
+      role: "VP Sales",
+      company: "Solventis",
+      avatar: null,
+      source: "Fiverr",
+    },
+    {
+      quote: "Fast, precise, and genuinely cares about the outcome. Not just a freelancer — a real data partner.",
+      author: "Yuki T.",
+      role: "Founder",
+      company: "Novu Labs",
+      avatar: null,
+      source: "Fiverr",
+    },
+    {
+      quote: "Working with Blinko transformed how we think about our data. The ROI from the first engagement paid for a year of work.",
+      author: "Elena V.",
+      role: "CFO",
+      company: "Meridian Group",
+      avatar: null,
+      source: "Direct",
+    },
+    {
+      quote: "Clear deliverables, on time, and the analysis actually changed our strategy. That's exactly what you want from a consultant.",
+      author: "Omar A.",
+      role: "Strategy Manager",
+      company: "Intel",
+      avatar: null,
+      source: "Direct",
     },
   ],
 
@@ -154,28 +213,30 @@ export const siteConfig = {
   leadership: [
     {
       name: "Dror Rosentraub",
-      role: "Founder",
-      title: "Data Science & Statistics Consultant",
-      // bio: "I'm a data scientist and the founder of Blinko Analytics with over 8 years of experience and two degrees in statistics, including a master's from the Georgia Institute of Technology. I've worked with companies like Intel and Perimeter 81, published healthcare analytics research with Oxford University Press, and am a Pro and Top Rated freelancer on Fiverr.",
-      image: '/leadership/dror.jpg' as string | null,
+      role: "Founder & CEO",
+      title: "Chief Executive Officer, Head Data Scientist and Consultant",
+      bio: null,
+      image: `${import.meta.env.BASE_URL}leadership/dror.jpg` as string | null,
       linkedin: "https://www.linkedin.com/in/dror-rosentraub/" as string | null,
       accent: "#00C2FF",
     },
     {
       name: "Mai Tran",
-      role: "CRO",
-      title: "Chief Marketing Officer and Business Analyst",
+      role: "Co-Founder & CRO",
+      title: "Chief Marketing Officer & Business Analyst",
+      bio: null,
       // bio: "I'm a data scientist and the founder of Blinko Analytics with over 8 years of experience and two degrees in statistics, including a master's from the Georgia Institute of Technology. I've worked with companies like Intel and Perimeter 81, published healthcare analytics research with Oxford University Press, and am a Pro and Top Rated freelancer on Fiverr.",
-      image: '/leadership/mai.jpg' as string | null,
+      image: `${import.meta.env.BASE_URL}leadership/mai.jpg` as string | null,
       linkedin: "https://www.linkedin.com/in/mai-tran-921818174/" as string | null,
       accent: "#00C2FF",
     },
     {
       name: "Sagnik Das",
-      role: "",
-      title: "Builder & Security Analyst",
+      role: "CTO",
+      title: "Builder & Security Consultant",
+      bio: null,
       //bio: "",
-      image: null as string | null,
+      image: `${import.meta.env.BASE_URL}leadership/sagnik.jpg` as string | null,
       linkedin: "https://www.linkedin.com/in/sagnikdas1/" as string | null,
       accent: "#00C2FF",
     },
@@ -235,7 +296,8 @@ export const siteConfig = {
       { city: "Hanoi", address: "168 Ngoc Ha Street, Hanoi, Vietnam" },
     ],
     email: "hello@blinko-analytics.com",
-    linkedin: "https://www.linkedin.com/in/dror-rosentraub/",
+    phone: "+972 50 000 0000",       // set to null to hide
+    linkedin: "https://www.linkedin.com/in/dror-rosentraub/" as string | null,
   },
 
   // ─── Footer ───────────────────────────────────────────────

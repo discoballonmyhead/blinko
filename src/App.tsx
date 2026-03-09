@@ -8,6 +8,8 @@ const ProductsPage = lazy(() => import("./pages/ProductsPage").then(m => ({ defa
 const PricingPage = lazy(() => import("./pages/PricingPage").then(m => ({ default: m.PricingPage })));
 const DemoPage = lazy(() => import("./pages/demos/DemoPage").then(m => ({ default: m.DemoPage })));
 const PredictiveDemoPage = lazy(() => import("./pages/demos/PredictiveDemoPage").then(m => ({ default: m.PredictiveDemoPage })));
+const PrivacyPage = lazy(() => import("./pages/PrivacyPage").then(m => ({ default: m.PrivacyPage })));
+const TermsPage = lazy(() => import("./pages/TermsPage").then(m => ({ default: m.TermsPage })));
 
 const DEMO_ROUTES = ["/demo/", "/demos/"];
 
@@ -32,6 +34,8 @@ function MainLayout() {
           <Route index element={<HomePage />} />
           <Route path="products" element={<ProductsPage />} />
           <Route path="pricing" element={<PricingPage />} />
+          <Route path="privacy" element={<PrivacyPage />} />
+          <Route path="terms" element={<TermsPage />} />
         </Routes>
       </main>
       <Footer />
