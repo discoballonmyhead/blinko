@@ -8,7 +8,7 @@ export const siteConfig = {
   brand: {
     name: "Blinko",
     tagline: "Analytics",
-    logo: "/images/logo.png",
+    logo: "/images/logo_header.png",
     favicon: "/images/logo.png",
   },
 
