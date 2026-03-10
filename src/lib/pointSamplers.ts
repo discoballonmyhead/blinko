@@ -165,32 +165,29 @@ export function sampleSVGPath(
   return pts.slice(0, n);
 }
 
-// ── GLB MODEL — Three.js loaded lazily ───────────────────────────────────────
+// ── GLB MODEL ─────────────────────────────────────────────────────────────────
 
 /**
  * sampleGLBModel
  *
- * Loads a GLB/GLTF model and returns n Point3D samples from its surface.
+ * Samples n points evenly across the surface of a GLB/GLTF mesh using
+ * area-weighted triangle sampling. Works correctly for both high-poly and
+ * low-poly models.
  *
- * ROTATION NOTE — Blender exports:
- *   Blender uses Z-up / Y-forward. glTF spec uses Y-up / Z-forward.
- *   The Blender glTF exporter compensates by baking a -90° X rotation into
- *   the root node, so models exported from Blender usually arrive already
- *   correct in Three.js — UNLESS you didn't apply transforms before export.
+ * ROTATION:
+ *   rotX / rotY / rotZ are applied AFTER normalisation to [-1,1], so
+ *   they behave intuitively regardless of the model's original scale.
  *
- *   If your model appears lying on its back (rotated 90° on X):
- *     rotationX: -90  (or 90, depending on orientation)
- *   If it's facing the wrong way:
- *     rotationY: 180
+ *   Per-mesh rotations baked by Blender (the most common source of weirdness)
+ *   are handled automatically — we read each mesh's world matrix directly
+ *   rather than touching the scene root, so baked transforms are always
+ *   included correctly.
  *
- *   The autoCorrectBlender flag (default true) applies the standard
- *   Blender→glTF correction automatically. Turn it off if your model
- *   already looks correct or was not exported from Blender.
- *
- * SAMPLING STRATEGY:
- *   Low-poly models (< n verts) are surface-sampled using triangle area
- *   weighting so particles spread evenly across the mesh surface, not
- *   just clustered at vertices.
+ *   Common corrections by export source:
+ *     Blender (applied transforms before export): rotX/Y/Z = 0  ← just works
+ *     Blender (transforms NOT applied):           rotationX: -90
+ *     Blender watches-style (-45X, -90Z bake):    rotationX: 45, rotationZ: 90
+ *     Sketchfab / other tools:                    try rotationX: -90 first
  */
 export async function sampleGLBModel(
   modelPath: string,
@@ -199,7 +196,6 @@ export async function sampleGLBModel(
   rotY = 0,
   rotZ = 0,
   scale = 1.0,
-  autoCorrectBlender = true,
 ): Promise<Point3D[]> {
   console.log(`[GLB] Loading: ${modelPath}`);
 
@@ -219,34 +215,24 @@ export async function sampleGLBModel(
   const { GLTFLoader } = GLTFLoaderMod;
 
   return new Promise((resolve) => {
-    const loader = new GLTFLoader();
-
-    loader.load(
+    new GLTFLoader().load(
       modelPath,
       (gltf) => {
-        // ── Collect all triangles from every mesh ──────────────────────────
-        type Triangle = {
-          a: InstanceType<typeof THREE.Vector3>;
-          b: InstanceType<typeof THREE.Vector3>;
-          c: InstanceType<typeof THREE.Vector3>;
-          area: number;
-        };
+        // ── Collect triangles in world space ───────────────────────────────
+        // We read each mesh's matrixWorld directly — this correctly includes
+        // any per-mesh rotations baked by Blender or other exporters, without
+        // needing to guess or reset anything at the scene level.
+        type V3 = InstanceType<typeof THREE.Vector3>;
+        type Tri = { a: V3; b: V3; c: V3; area: number };
 
-        const triangles: Triangle[] = [];
+        const triangles: Tri[] = [];
         let totalArea = 0;
 
-        // Apply Blender axis correction to the root scene before reading verts.
-        // Blender exports with a -90° X rotation baked in; the glTF loader
-        // un-does this automatically for the scene graph, but we re-apply it
-        // here so world-space coordinates are Y-up as expected.
-        if (autoCorrectBlender) {
-          gltf.scene.rotation.set(0, 0, 0);
-          gltf.scene.updateMatrixWorld(true);
-        }
+        // Ensure all world matrices are up to date before we read them
+        gltf.scene.updateMatrixWorld(true);
 
         gltf.scene.traverse((child: any) => {
           if (!child.isMesh) return;
-
           const geom = child.geometry;
           const pos = geom.attributes.position;
           if (!pos) return;
@@ -254,34 +240,32 @@ export async function sampleGLBModel(
           child.updateWorldMatrix(true, false);
           const mat = child.matrixWorld;
 
-          // Helper: get world-space vertex i
-          const getVert = (i: number) =>
+          const getV = (i: number): V3 =>
             new THREE.Vector3(pos.getX(i), pos.getY(i), pos.getZ(i)).applyMatrix4(mat);
 
           const index = geom.index;
-
           if (index) {
             for (let i = 0; i < index.count; i += 3) {
-              const a = getVert(index.getX(i));
-              const b = getVert(index.getX(i + 1));
-              const c = getVert(index.getX(i + 2));
-              const area = triangleArea(a, b, c, THREE);
+              const a = getV(index.getX(i));
+              const b = getV(index.getX(i + 1));
+              const c = getV(index.getX(i + 2));
+              const area = b.clone().sub(a).cross(c.clone().sub(a)).length() * 0.5;
               totalArea += area;
               triangles.push({ a, b, c, area });
             }
           } else {
             for (let i = 0; i < pos.count; i += 3) {
-              const a = getVert(i);
-              const b = getVert(i + 1 < pos.count ? i + 1 : i);
-              const c = getVert(i + 2 < pos.count ? i + 2 : i);
-              const area = triangleArea(a, b, c, THREE);
+              const a = getV(i);
+              const b = getV(Math.min(i + 1, pos.count - 1));
+              const c = getV(Math.min(i + 2, pos.count - 1));
+              const area = b.clone().sub(a).cross(c.clone().sub(a)).length() * 0.5;
               totalArea += area;
               triangles.push({ a, b, c, area });
             }
           }
         });
 
-        console.log(`[GLB] ${triangles.length} triangles, total area: ${totalArea.toFixed(3)}`);
+        console.log(`[GLB] ${triangles.length} triangles, area=${totalArea.toFixed(3)}`);
 
         if (!triangles.length) {
           console.warn("[GLB] No mesh data — falling back to sphere");
@@ -289,31 +273,36 @@ export async function sampleGLBModel(
           return;
         }
 
-        // ── Surface sample n points ────────────────────────────────────────
-        // Build cumulative area CDF for weighted random triangle selection
+        // ── Area-weighted surface sampling ─────────────────────────────────
+        // Build CDF so larger triangles get proportionally more particles
         const cdf: number[] = [];
-        let cumulative = 0;
+        let cum = 0;
         for (const tri of triangles) {
-          cumulative += tri.area / totalArea;
-          cdf.push(cumulative);
+          cum += tri.area / totalArea;
+          cdf.push(cum);
         }
 
-        // Sample raw world-space points
-        const rawPts: InstanceType<typeof THREE.Vector3>[] = [];
-        for (let i = 0; i < n; i++) {
+        const rawPts: V3[] = Array.from({ length: n }, () => {
+          // Binary search into CDF
           const r = Math.random();
-          // Binary search for triangle in CDF
           let lo = 0, hi = cdf.length - 1;
           while (lo < hi) {
             const mid = (lo + hi) >> 1;
             if (cdf[mid] < r) lo = mid + 1; else hi = mid;
           }
-          const tri = triangles[lo];
-          // Random point on triangle via barycentric coords
-          rawPts.push(randomPointOnTriangle(tri.a, tri.b, tri.c, THREE));
-        }
+          const { a, b, c } = triangles[lo];
+          // Uniform random point on triangle (barycentric)
+          let r1 = Math.random(), r2 = Math.random();
+          if (r1 + r2 > 1) { r1 = 1 - r1; r2 = 1 - r2; }
+          const r3 = 1 - r1 - r2;
+          return new THREE.Vector3(
+            a.x * r3 + b.x * r1 + c.x * r2,
+            a.y * r3 + b.y * r1 + c.y * r2,
+            a.z * r3 + b.z * r1 + c.z * r2,
+          );
+        });
 
-        // ── Normalise to [-1, 1] ───────────────────────────────────────────
+        // ── Normalise to [-1, 1] then apply user rotation ──────────────────
         const box = new THREE.Box3().setFromPoints(rawPts);
         const center = new THREE.Vector3();
         box.getCenter(center);
@@ -321,7 +310,6 @@ export async function sampleGLBModel(
         box.getSize(size);
         const maxDim = Math.max(size.x, size.y, size.z) || 1;
 
-        // User rotation applied AFTER normalisation so it's intuitive
         const rotMat = new THREE.Matrix4().makeRotationFromEuler(
           new THREE.Euler(
             THREE.MathUtils.degToRad(rotX),
@@ -331,58 +319,25 @@ export async function sampleGLBModel(
         );
 
         const pts: Point3D[] = rawPts.map(v => {
-          const norm = v.clone()
+          const p = v.clone()
             .sub(center)
             .divideScalar(maxDim / 2)
             .multiplyScalar(scale)
             .applyMatrix4(rotMat);
-          return { x: norm.x, y: norm.y, z: norm.z };
+          return { x: p.x, y: p.y, z: p.z };
         });
 
-        console.log(`[GLB] Sampled ${pts.length} surface points — done`);
+        console.log(`[GLB] Done — ${pts.length} surface points`);
         resolve(pts);
       },
-      (progress) => {
-        if (progress.total) {
-          console.log(`[GLB] ${Math.round(progress.loaded / progress.total * 100)}%`);
-        }
+      (xhr) => {
+        if (xhr.total) console.log(`[GLB] ${Math.round(xhr.loaded / xhr.total * 100)}%`);
       },
       (error) => {
         console.error("[GLB] Load error:", error);
-        console.error("[GLB] Path tried:", modelPath);
-        console.error("[GLB] File must be in /public/models/ and path must start with /blinko/models/ (or /models/ locally)");
+        console.error("[GLB] Ensure the file is in /public/models/ and path starts with /models/ (or /blinko/models/ on prod)");
         resolve(sampleSphere(n));
       }
     );
   });
-}
-
-// ── Triangle helpers ──────────────────────────────────────────────────────────
-
-function triangleArea(
-  a: InstanceType<typeof import("three").Vector3>,
-  b: InstanceType<typeof import("three").Vector3>,
-  c: InstanceType<typeof import("three").Vector3>,
-  THREE: typeof import("three"),
-): number {
-  const ab = b.clone().sub(a);
-  const ac = c.clone().sub(a);
-  return ab.cross(ac).length() * 0.5;
-}
-
-function randomPointOnTriangle(
-  a: InstanceType<typeof import("three").Vector3>,
-  b: InstanceType<typeof import("three").Vector3>,
-  c: InstanceType<typeof import("three").Vector3>,
-  THREE: typeof import("three"),
-): InstanceType<typeof import("three").Vector3> {
-  // Uniform random barycentric coordinates
-  let r1 = Math.random(), r2 = Math.random();
-  if (r1 + r2 > 1) { r1 = 1 - r1; r2 = 1 - r2; }
-  const r3 = 1 - r1 - r2;
-  return new THREE.Vector3(
-    a.x * r3 + b.x * r1 + c.x * r2,
-    a.y * r3 + b.y * r1 + c.y * r2,
-    a.z * r3 + b.z * r1 + c.z * r2,
-  );
 }

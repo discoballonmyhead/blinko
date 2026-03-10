@@ -172,7 +172,7 @@ export const sectionParticles: SectionParticleConfig[] = [
 
       initialRotationY: 0,
 
-      showLines: false,
+      showLines: true,
 
     },
   },
