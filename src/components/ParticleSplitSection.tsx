@@ -1,9 +1,8 @@
 /**
  * ParticleSplitSection.tsx
  *
- * Each section owns its own canvas. All visual controls come from
- * particles.config.ts — particleCount, showLines, lineOpacity,
- * autoRotateY, initialRotationY are all per-section.
+ * On mobile (< 768px): canvas hidden, content full-width.
+ * Text slide-in animation preserved on both breakpoints.
  */
 
 import { useEffect, useRef, useState } from "react";
@@ -16,8 +15,6 @@ import type { Point3D } from "../lib/pointSamplers";
 
 gsap.registerPlugin(ScrollTrigger);
 
-// ── Helpers ───────────────────────────────────────────────────────────────────
-
 function hexToRgb(hex: string): [number, number, number] {
   const c = hex.replace("#", "");
   return [parseInt(c.slice(0, 2), 16), parseInt(c.slice(2, 4), 16), parseInt(c.slice(4, 6), 16)];
@@ -25,17 +22,22 @@ function hexToRgb(hex: string): [number, number, number] {
 function lerp(a: number, b: number, t: number) { return a + (b - a) * t; }
 function smoothstep(t: number) { t = Math.max(0, Math.min(1, t)); return t * t * (3 - 2 * t); }
 
-// ── Per-section canvas ────────────────────────────────────────────────────────
+function useIsMobile(breakpoint = 768) {
+  const [isMobile, setIsMobile] = useState(() => window.innerWidth < breakpoint);
+  useEffect(() => {
+    const handler = () => setIsMobile(window.innerWidth < breakpoint);
+    window.addEventListener("resize", handler);
+    return () => window.removeEventListener("resize", handler);
+  }, [breakpoint]);
+  return isMobile;
+}
 
 interface CanvasProps {
   points: Point3D[];
   color: string;
   colorFar: string;
   particleSize: number;
-  /** Degrees per frame. 0 = fully static. */
   autoRotateY: number;
-  /** Starting Y angle in degrees — fixes the "wrong angle on load" bug.
-   *  When autoRotateY is 0 this is the permanent viewing angle. */
   initialRotationY: number;
   showLines: boolean;
   lineOpacity: number;
@@ -60,8 +62,6 @@ function ShapeCanvas({
     const ease = particleGlobalConfig.lerpSpeed;
     const FOV = 2.8;
 
-    // initialRotationY converted to radians — this is the permanent start angle.
-    // autoRotateY accumulates on top of it each frame.
     let rotY = initialRotationY * (Math.PI / 180);
 
     function resize() {
@@ -78,7 +78,7 @@ function ShapeCanvas({
       r: number; g: number; b: number;
       alpha: number;
     };
-    // Scatter origin — random unit cube, same seed each mount
+
     const particles: P[] = Array.from({ length: N }, () => {
       const ox = (Math.random() - 0.5) * 2, oy = (Math.random() - 0.5) * 2, oz = (Math.random() - 0.5) * 2;
       return { x: ox, y: oy, z: oz, ox, oy, oz, r: 40, g: 40, b: 60, alpha: 0.08 };
@@ -101,13 +101,11 @@ function ShapeCanvas({
       ctx.clearRect(0, 0, W, H);
 
       const morphP = smoothstep(progressRef.current);
-      // Only increment rotation if autoRotateY > 0
       if (autoRotateY !== 0) rotY += autoRotateY * 0.017;
       const cosR = Math.cos(rotY), sinR = Math.sin(rotY);
 
       particles.forEach((p, i) => {
         const pt = points[i];
-        // Rotate target point around Y
         const rx = pt.x * cosR - pt.z * sinR;
         const rz = pt.x * sinR + pt.z * cosR;
 
@@ -115,7 +113,6 @@ function ShapeCanvas({
         const tty = lerp(p.oy, pt.y, morphP);
         const ttz = lerp(p.oz, rz, morphP);
 
-        // Depth-based colour blend
         const df = ((rz + 1) / 2);
         const ttr = lerp(r2, r1, df);
         const ttg = lerp(g2, g1, df);
@@ -128,8 +125,7 @@ function ShapeCanvas({
         p.g = lerp(p.g, ttg, ease);
         p.b = lerp(p.b, ttb, ease);
 
-        const { sx, sy } = project(p.x, p.y, p.z, W, H);
-        const { scale } = project(p.x, p.y, p.z, W, H);
+        const { sx, sy, scale } = project(p.x, p.y, p.z, W, H);
         const depthA = Math.max(0.05, Math.min(1, ((p.z + 1.5) / 3) * 0.85 + 0.15));
         const tAlpha = morphP > 0.05 ? 0.45 + depthA * 0.55 : 0.06;
         p.alpha = lerp(p.alpha, tAlpha, 0.06);
@@ -137,25 +133,21 @@ function ShapeCanvas({
         const pr = Math.max(0.4, particleSize * scale * 0.10);
         const cr = Math.round(p.r), cg = Math.round(p.g), cb = Math.round(p.b);
 
-        // Soft glow halo on near particles
         if (depthA > 0.55 && morphP > 0.25) {
           ctx.beginPath();
           ctx.arc(sx, sy, pr * 3.5, 0, Math.PI * 2);
           ctx.fillStyle = `rgba(${cr},${cg},${cb},${p.alpha * 0.07})`;
           ctx.fill();
         }
-        // Core dot
         ctx.beginPath();
         ctx.arc(sx, sy, pr, 0, Math.PI * 2);
         ctx.fillStyle = `rgba(${cr},${cg},${cb},${p.alpha})`;
         ctx.fill();
       });
 
-      // Connection lines — only when showLines is true AND shape is assembled
       if (showLines && morphP > 0.45) {
         const maxD = particleGlobalConfig.connectionDistance;
         const maxD2 = maxD * maxD;
-        const effOpacity = lineOpacity;
         for (let i = 0; i < particles.length; i += 2) {
           for (let j = i + 2; j < particles.length; j += 2) {
             const a = particles[i], b = particles[j];
@@ -163,7 +155,7 @@ function ShapeCanvas({
             const { sx: bx, sy: by } = project(b.x, b.y, b.z, W, H);
             const dx = ax - bx, dy = ay - by, d2 = dx * dx + dy * dy;
             if (d2 < maxD2) {
-              const op = (1 - d2 / maxD2) * effOpacity * morphP;
+              const op = (1 - d2 / maxD2) * lineOpacity * morphP;
               const mr = Math.round((a.r + b.r) / 2), mg = Math.round((a.g + b.g) / 2), mb = Math.round((a.b + b.b) / 2);
               ctx.beginPath(); ctx.moveTo(ax, ay); ctx.lineTo(bx, by);
               ctx.strokeStyle = `rgba(${mr},${mg},${mb},${op})`;
@@ -179,7 +171,6 @@ function ShapeCanvas({
       cancelAnimationFrame(raf);
       window.removeEventListener("resize", resize);
     };
-    // Re-run only when shape data or visual config changes
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [points, color, colorFar, particleSize, autoRotateY, initialRotationY, showLines, lineOpacity]);
 
@@ -191,8 +182,6 @@ function ShapeCanvas({
     />
   );
 }
-
-// ── Main export ───────────────────────────────────────────────────────────────
 
 interface Props {
   config: SectionParticleConfig;
@@ -207,15 +196,18 @@ export function ParticleSplitSection({ config, index, children, className = "", 
   const textRef = useRef<HTMLDivElement>(null);
   const progressRef = useRef(0);
   const [points, setPoints] = useState<Point3D[] | null>(null);
+  const isMobile = useIsMobile();
 
   const isEven = index % 2 === 0;
   const { shape } = config;
-
-  // Per-section particle count — falls back to global default
   const particleCount = shape.particleCount ?? particleGlobalConfig.particleCount;
 
-  // Load shape points
+  // Skip loading points entirely on mobile — saves memory + CPU
   useEffect(() => {
+    if (isMobile) {
+      setPoints(null);
+      return;
+    }
     async function load() {
       const n = particleCount;
       if (shape.type === "builtin" && shape.builtinShape) {
@@ -234,11 +226,11 @@ export function ParticleSplitSection({ config, index, children, className = "", 
     }
     void load();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [config]);
+  }, [config, isMobile]);
 
-  // GSAP ScrollTrigger — scrubs progressRef 0→1
+  // ScrollTrigger — text slide-in always active on both breakpoints
   useEffect(() => {
-    if (!sectionRef.current) return;
+    if (!sectionRef.current || !textRef.current) return;
     const section = sectionRef.current;
 
     const st = ScrollTrigger.create({
@@ -249,70 +241,99 @@ export function ParticleSplitSection({ config, index, children, className = "", 
       onUpdate: (self) => { progressRef.current = self.progress; },
     });
 
-    if (textRef.current) {
-      gsap.fromTo(textRef.current,
-        { opacity: 0, x: isEven ? -28 : 28 },
-        {
-          opacity: 1, x: 0, duration: 0.7, ease: "power2.out",
-          scrollTrigger: { trigger: section, start: "top 65%", end: "top 35%", scrub: 0.9 }
+    // On mobile: always slide from left. On desktop: alternate sides.
+    const slideX = isMobile ? -22 : (isEven ? -28 : 28);
+
+    gsap.fromTo(textRef.current,
+      { opacity: 0, x: slideX },
+      {
+        opacity: 1, x: 0, duration: 0.7, ease: "power2.out",
+        scrollTrigger: {
+          trigger: section,
+          start: "top 65%",
+          end: "top 35%",
+          scrub: 0.9,
         }
-      );
-    }
+      }
+    );
 
     return () => { st.kill(); };
-  }, [isEven]);
+  }, [isEven, isMobile]);
 
   return (
     <section
       ref={sectionRef}
       id={config.sectionId}
       className={`relative ${className}`}
-      style={{ minHeight: "100vh", display: "flex", alignItems: "center", ...style }}
+      style={{
+        minHeight: isMobile ? "auto" : "100vh",
+        display: "flex",
+        alignItems: "center",
+        ...style,
+      }}
     >
-      {/* Colour glow behind shape side */}
+      {/* Colour glow — top-edge on mobile, side on desktop */}
       <div style={{
         position: "absolute", inset: 0, pointerEvents: "none",
-        background: isEven
-          ? `radial-gradient(ellipse 40% 60% at 75% 50%, ${shape.color}0a 0%, transparent 70%)`
-          : `radial-gradient(ellipse 40% 60% at 25% 50%, ${shape.color}0a 0%, transparent 70%)`,
+        background: isMobile
+          ? `radial-gradient(ellipse 80% 40% at 50% 0%, ${shape.color}08 0%, transparent 70%)`
+          : isEven
+            ? `radial-gradient(ellipse 40% 60% at 75% 50%, ${shape.color}0a 0%, transparent 70%)`
+            : `radial-gradient(ellipse 40% 60% at 25% 50%, ${shape.color}0a 0%, transparent 70%)`,
       }} />
 
       <div style={{
-        maxWidth: 1200, margin: "0 auto", width: "100%", padding: "80px 64px",
-        display: "grid", gridTemplateColumns: "1fr 1fr", gap: 80, alignItems: "center",
+        maxWidth: 1200,
+        margin: "0 auto",
+        width: "100%",
+        padding: isMobile ? "64px 20px" : "80px 64px",
+        display: "grid",
+        // Single column on mobile — text takes full width
+        gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr",
+        gap: isMobile ? 0 : 80,
+        alignItems: "center",
       }}>
-        {/* Text side */}
-        <div ref={textRef} style={{ order: isEven ? 1 : 2, opacity: 0 }}>
 
+        {/* Text side */}
+        <div
+          ref={textRef}
+          style={{
+            order: isMobile ? 1 : (isEven ? 1 : 2),
+            opacity: 0,
+          }}
+        >
           {children}
         </div>
 
-        {/* Canvas side */}
-        <div style={{ order: isEven ? 2 : 1, position: "relative", height: 460 }}>
-          {points && (
-            <ShapeCanvas
-              points={points}
-              color={shape.color}
-              colorFar={shape.colorFar ?? "#001133"}
-              particleSize={shape.particleSize ?? 1.8}
-              autoRotateY={shape.autoRotateY ?? 0.15}
-              initialRotationY={shape.initialRotationY ?? 0}
-              showLines={shape.showLines ?? true}
-              lineOpacity={shape.lineOpacity ?? particleGlobalConfig.connectionOpacity}
-              progressRef={progressRef}
-            />
-          )}
-          <div style={{
-            position: "absolute", bottom: 20, left: "50%", transform: "translateX(-50%)",
-            color: "rgba(255,255,255,0.18)", fontSize: 11, letterSpacing: "0.1em",
-            textTransform: "uppercase", fontFamily: "DM Sans,sans-serif", whiteSpace: "nowrap",
-            pointerEvents: "none",
-          }}>
-            {config.sublabel}
+        {/* Canvas side — desktop only */}
+        {!isMobile && (
+          <div style={{ order: isEven ? 2 : 1, position: "relative", height: 460 }}>
+            {points && (
+              <ShapeCanvas
+                points={points}
+                color={shape.color}
+                colorFar={shape.colorFar ?? "#001133"}
+                particleSize={shape.particleSize ?? 1.8}
+                autoRotateY={shape.autoRotateY ?? 0.15}
+                initialRotationY={shape.initialRotationY ?? 0}
+                showLines={shape.showLines ?? true}
+                lineOpacity={shape.lineOpacity ?? particleGlobalConfig.connectionOpacity}
+                progressRef={progressRef}
+              />
+            )}
+            <div style={{
+              position: "absolute", bottom: 20, left: "50%", transform: "translateX(-50%)",
+              color: "rgba(255,255,255,0.18)", fontSize: 11, letterSpacing: "0.1em",
+              textTransform: "uppercase", fontFamily: "DM Sans,sans-serif", whiteSpace: "nowrap",
+              pointerEvents: "none",
+            }}>
+              {config.sublabel}
+            </div>
           </div>
-        </div>
+        )}
       </div>
 
+      {/* Section divider */}
       <div style={{
         position: "absolute", bottom: 0, left: "8%", right: "8%", height: 1,
         background: "linear-gradient(90deg,transparent,rgba(255,255,255,0.05),transparent)",

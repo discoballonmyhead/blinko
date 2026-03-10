@@ -1,9 +1,11 @@
 import { Link } from "react-router-dom";
 import { useFadeIn } from "../hooks/useFadeIn";
+
 import { Check, Zap } from "lucide-react";
 import { AnimatedGridPattern } from "../components/AnimatedGridPattern";
 import { ParticleBackground } from "../components/ParticleBackground";
 import { siteConfig } from "../config/site.config";
+import { useIsMobile } from "../hooks/isMobile";
 
 function FadeUp({ children, delay = 0 }: { children: React.ReactNode; delay?: number }) {
   const { ref, style } = useFadeIn({ delay, y: 18 });
@@ -11,89 +13,106 @@ function FadeUp({ children, delay = 0 }: { children: React.ReactNode; delay?: nu
 }
 
 export function PricingPage() {
+  const isMobile = useIsMobile();
+
   return (
     <div className="bg-[#030814] min-h-screen text-white overflow-x-hidden">
-      {/* Hero */}
-      <section className="relative pt-40 pb-20 px-6 overflow-hidden">
+
+      {/* ── Hero ── */}
+      <section className="relative overflow-hidden" style={{ paddingTop: isMobile ? 100 : 160, paddingBottom: isMobile ? 48 : 80, paddingLeft: isMobile ? 20 : 24, paddingRight: isMobile ? 20 : 24 }}>
         <div className="absolute inset-0">
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_70%_60%_at_50%_0%,rgba(0,194,255,0.12),transparent)]" />
-          <AnimatedGridPattern numSquares={15} maxOpacity={0.18} duration={6} />
-          <ParticleBackground config={{ count: 30, speed: 0.25 }} />
+          <AnimatedGridPattern numSquares={isMobile ? 8 : 15} maxOpacity={0.18} duration={6} />
+          {!isMobile && <ParticleBackground config={{ count: 30, speed: 0.25 }} />}
         </div>
-        <div className="max-w-3xl mx-auto text-center relative z-10">
-          <div
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#00C2FF]/10 border border-[#00C2FF]/20 text-[#00C2FF] text-xs font-semibold uppercase tracking-widest mb-8"
-          >
+        <div className="relative z-10" style={{ maxWidth: 680, margin: "0 auto", textAlign: "center" }}>
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#00C2FF]/10 border border-[#00C2FF]/20 text-[#00C2FF] text-xs font-semibold uppercase tracking-widest mb-6">
             <Zap size={12} />
             Pricing
           </div>
-          <h1
-            className="text-5xl md:text-7xl font-black leading-tight mb-5"
-          >
+          <h1 style={{
+            fontFamily: "Syne, sans-serif", fontWeight: 800, color: "#fff",
+            fontSize: isMobile ? "clamp(2.4rem,9vw,3.2rem)" : "clamp(3rem,6vw,4.5rem)",
+            lineHeight: 1, marginBottom: 16,
+          }}>
             {siteConfig.pricing.headline}
           </h1>
-          <p
-            className="text-white/50 text-xl"
-          >
+          <p style={{ color: "rgba(255,255,255,0.45)", fontSize: isMobile ? "1rem" : "1.15rem", lineHeight: 1.65 }}>
             {siteConfig.pricing.subheadline}
           </p>
         </div>
       </section>
 
-      {/* Plans */}
-      <section className="py-16 px-6 pb-32">
-        <div className="max-w-6xl mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-stretch">
+      {/* ── Plans ── */}
+      <section style={{ padding: isMobile ? "32px 16px 64px" : "16px 24px 120px" }}>
+        <div style={{ maxWidth: 1100, margin: "0 auto" }}>
+          <div style={{
+            display: "grid",
+            gridTemplateColumns: isMobile ? "1fr" : "repeat(3, 1fr)",
+            gap: isMobile ? 16 : 24,
+            alignItems: "stretch",
+          }}>
             {siteConfig.pricing.plans.map((plan, i) => (
               <FadeUp key={plan.name} delay={i * 0.12}>
-                <div
-                  className={`relative h-full flex flex-col rounded-2xl p-8 border transition-all duration-500 ${
-                    plan.highlighted
-                      ? "border-[#00C2FF]/40 bg-gradient-to-b from-[#00C2FF]/[0.08] to-[#0066FF]/[0.04] shadow-[0_0_60px_rgba(0,194,255,0.12)]"
-                      : "border-white/[0.07] bg-[#080f1f] hover:border-white/20"
-                  }`}
-                >
+                <div style={{
+                  position: "relative", height: "100%", display: "flex", flexDirection: "column",
+                  borderRadius: 20, padding: isMobile ? "28px 22px" : "32px",
+                  border: plan.highlighted ? "1px solid rgba(0,194,255,0.4)" : "1px solid rgba(255,255,255,0.07)",
+                  background: plan.highlighted
+                    ? "linear-gradient(to bottom, rgba(0,194,255,0.08), rgba(0,102,255,0.04))"
+                    : "rgba(8,15,31,0.9)",
+                  boxShadow: plan.highlighted ? "0 0 60px rgba(0,194,255,0.12)" : "none",
+                  transition: "border-color 0.3s",
+                }}>
                   {plan.highlighted && (
-                    <div className="absolute -top-4 left-1/2 -translate-x-1/2">
-                      <div className="px-4 py-1.5 rounded-full bg-gradient-to-r from-[#00C2FF] to-[#0066FF] text-white text-xs font-bold uppercase tracking-wider shadow-lg">
+                    <div style={{ position: "absolute", top: -14, left: "50%", transform: "translateX(-50%)" }}>
+                      <div style={{
+                        padding: "5px 16px", borderRadius: 100,
+                        background: "linear-gradient(135deg, #00C2FF, #0066FF)",
+                        color: "#fff", fontSize: 10, fontWeight: 800, letterSpacing: "0.1em", textTransform: "uppercase",
+                        whiteSpace: "nowrap",
+                      }}>
                         Most Popular
                       </div>
                     </div>
                   )}
 
-                  {/* Plan header */}
-                  <div className="mb-6">
-                    <h3
-                      className={`text-sm font-bold uppercase tracking-widest mb-3 ${
-                        plan.highlighted ? "text-[#00C2FF]" : "text-white/40"
-                      }`}
-                    >
+                  {/* Header */}
+                  <div style={{ marginBottom: 20 }}>
+                    <h3 style={{
+                      fontSize: 11, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase",
+                      color: plan.highlighted ? "#00C2FF" : "rgba(255,255,255,0.35)",
+                      marginBottom: 12, fontFamily: "DM Sans, sans-serif",
+                    }}>
                       {plan.name}
                     </h3>
-                    <div className="flex items-baseline gap-1 mb-3">
-                      <span className="text-5xl font-black text-white">{plan.price}</span>
+                    <div style={{ display: "flex", alignItems: "baseline", gap: 4, marginBottom: 10 }}>
+                      <span style={{ fontFamily: "Syne, sans-serif", fontWeight: 800, fontSize: isMobile ? "2.6rem" : "3rem", color: "#fff", lineHeight: 1 }}>
+                        {plan.price}
+                      </span>
                       {plan.period && (
-                        <span className="text-white/30 text-sm">{plan.period}</span>
+                        <span style={{ color: "rgba(255,255,255,0.3)", fontSize: 13 }}>{plan.period}</span>
                       )}
                     </div>
-                    <p className="text-white/40 text-sm leading-relaxed">{plan.description}</p>
+                    {plan.description && (
+                      <p style={{ color: "rgba(255,255,255,0.35)", fontSize: "0.85rem", lineHeight: 1.6 }}>
+                        {plan.description}
+                      </p>
+                    )}
                   </div>
 
                   {/* Features */}
-                  <ul className="space-y-3 mb-8 flex-1">
-                    {plan.features.map((feature) => (
-                      <li key={feature} className="flex items-start gap-3">
-                        <div
-                          className={`w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 ${
-                            plan.highlighted ? "bg-[#00C2FF]/20" : "bg-white/[0.06]"
-                          }`}
-                        >
-                          <Check
-                            size={11}
-                            className={plan.highlighted ? "text-[#00C2FF]" : "text-white/40"}
-                          />
+                  <ul style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 24, flex: 1 }}>
+                    {plan.features.map((feature: string) => (
+                      <li key={feature} style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
+                        <div style={{
+                          width: 20, height: 20, borderRadius: "50%", flexShrink: 0, marginTop: 1,
+                          display: "flex", alignItems: "center", justifyContent: "center",
+                          background: plan.highlighted ? "rgba(0,194,255,0.15)" : "rgba(255,255,255,0.06)",
+                        }}>
+                          <Check size={11} style={{ color: plan.highlighted ? "#00C2FF" : "rgba(255,255,255,0.35)" }} />
                         </div>
-                        <span className="text-white/60 text-sm leading-relaxed">{feature}</span>
+                        <span style={{ color: "rgba(255,255,255,0.55)", fontSize: "0.88rem", lineHeight: 1.55 }}>{feature}</span>
                       </li>
                     ))}
                   </ul>
@@ -101,11 +120,19 @@ export function PricingPage() {
                   {/* CTA */}
                   <Link
                     to={plan.ctaPath}
-                    className={`block text-center py-3.5 px-6 rounded-xl font-bold text-sm transition-all duration-200 ${
-                      plan.highlighted
-                        ? "bg-gradient-to-r from-[#00C2FF] to-[#0066FF] text-white hover:opacity-90 shadow-[0_0_30px_rgba(0,194,255,0.3)]"
-                        : "bg-white/[0.05] border border-white/10 text-white/70 hover:bg-white/10 hover:text-white"
-                    }`}
+                    style={{
+                      display: "block", textAlign: "center",
+                      padding: "13px 20px", borderRadius: 12,
+                      fontWeight: 700, fontSize: 14, textDecoration: "none",
+                      color: "#fff", transition: "opacity 0.2s",
+                      background: plan.highlighted
+                        ? "linear-gradient(135deg, #00C2FF, #0066FF)"
+                        : "rgba(255,255,255,0.06)",
+                      border: plan.highlighted ? "none" : "1px solid rgba(255,255,255,0.1)",
+                      boxShadow: plan.highlighted ? "0 0 28px rgba(0,194,255,0.25)" : "none",
+                    }}
+                    onMouseEnter={e => (e.currentTarget as HTMLElement).style.opacity = "0.85"}
+                    onMouseLeave={e => (e.currentTarget as HTMLElement).style.opacity = "1"}
                   >
                     {plan.cta}
                   </Link>
@@ -116,43 +143,48 @@ export function PricingPage() {
 
           {/* Fine print */}
           <FadeUp delay={0.4}>
-            <p className="text-center text-white/25 text-sm mt-10">
-              All prices are project-based estimates. Custom scoping available for all plans.
-              <br />
-              <Link to="/#contact" className="text-[#00C2FF]/60 hover:text-[#00C2FF] underline transition-colors">
-                Talk to us
-              </Link>{" "}
+            <p style={{ textAlign: "center", color: "rgba(255,255,255,0.22)", fontSize: 13, marginTop: 36, lineHeight: 1.7 }}>
+              All prices are project-based estimates. Custom scoping available for all plans.{" "}
+              <br style={{ display: isMobile ? "none" : "block" }} />
+              <Link to="/#contact" style={{ color: "rgba(0,194,255,0.55)", textDecoration: "underline" }}>Talk to us</Link>{" "}
               to find the right fit.
             </p>
           </FadeUp>
         </div>
       </section>
 
-      {/* FAQ / reassurance strip */}
-      <section className="py-16 px-6 border-t border-white/5">
-        <div className="max-w-5xl mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+      {/* ── Reassurance strip ── */}
+      <section style={{
+        padding: isMobile ? "40px 20px 60px" : "64px 24px",
+        borderTop: "1px solid rgba(255,255,255,0.05)",
+      }}>
+        <div style={{ maxWidth: 900, margin: "0 auto" }}>
+          <div style={{
+            display: "grid",
+            gridTemplateColumns: isMobile ? "1fr" : "repeat(3, 1fr)",
+            gap: isMobile ? 24 : 32,
+          }}>
             {[
-              {
-                title: "No lock-in contracts",
-                desc: "Work with us project-by-project or retainer—your choice.",
-              },
-              {
-                title: "Fiverr-backed reputation",
-                desc: "Pro & Top Rated freelancer with dozens of verified client reviews.",
-              },
-              {
-                title: "Results guaranteed",
-                desc: "We iterate until the insights are actionable and the client is satisfied.",
-              },
+              { title: "No lock-in contracts", desc: "Work with us project-by-project or retainer—your choice." },
+              { title: "Fiverr-backed reputation", desc: "Pro & Top Rated freelancer with dozens of verified client reviews." },
+              { title: "Results guaranteed", desc: "We iterate until the insights are actionable and the client is satisfied." },
             ].map((item, i) => (
               <FadeUp key={item.title} delay={i * 0.1}>
-                <div className="p-6">
-                  <div className="w-10 h-10 rounded-xl bg-[#00C2FF]/10 flex items-center justify-center mx-auto mb-4">
-                    <Check size={18} className="text-[#00C2FF]" />
+                <div style={{ padding: isMobile ? "0" : "8px", textAlign: "center" }}>
+                  <div style={{
+                    width: 40, height: 40, borderRadius: 12,
+                    background: "rgba(0,194,255,0.08)",
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                    margin: "0 auto 14px",
+                  }}>
+                    <Check size={17} style={{ color: "#00C2FF" }} />
                   </div>
-                  <h4 className="text-white font-bold mb-2">{item.title}</h4>
-                  <p className="text-white/40 text-sm">{item.desc}</p>
+                  <h4 style={{ fontFamily: "Syne, sans-serif", fontWeight: 700, color: "#fff", marginBottom: 6, fontSize: "0.95rem" }}>
+                    {item.title}
+                  </h4>
+                  <p style={{ color: "rgba(255,255,255,0.38)", fontSize: "0.85rem", lineHeight: 1.65 }}>
+                    {item.desc}
+                  </p>
                 </div>
               </FadeUp>
             ))}

@@ -20,7 +20,7 @@ export const siteConfig = {
       { label: "Home", path: "/" },
       { label: "Products", path: "/products" },
       { label: "Pricing", path: "/pricing" },
-      { label: "About", path: "/#about" },
+      { label: "Team", path: "/team" },
       { label: "Contact", path: "/#contact" },
 
     ],
@@ -307,5 +307,10 @@ export const siteConfig = {
       { label: "Privacy Policy", path: "#" },
       { label: "Terms of Service", path: "#" },
     ],
+  },
+  mobile: {
+    showCaseStudies: true,
+    showTestimonials: false,
+    showContact: true,   // ← toggle any section off on mobile here
   },
 };

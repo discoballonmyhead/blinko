@@ -129,32 +129,51 @@ export const sectionParticles: SectionParticleConfig[] = [
     label: "Advanced Analytics",
     sublabel: "Real-time intelligence from your data",
     shape: {
-      type: "builtin",
-      builtinShape: "torus",
+      type: "glb",
+      modelPath: `${import.meta.env.BASE_URL}models/Ai_Chart.glb`,
+      rotationX: -90,  // best guess — may need tweaking
+      rotationY: 0,
+      rotationZ: 0,
+      particleCount: 2000,
+      modelScale: 1.0,
       color: "#00C2FF",
-      colorFar: "#0033aa",
-      particleSize: 1.8,
-      autoRotateY: 0.20,
-      initialRotationY: 0,
-      particleCount: 320,
-      showLines: false,        // pure particles — no lines
-    },
+      colorFar: "#001133",
+      autoRotateY: 0.2,
+      showLines: false,
+    }
+    // shape: {
+    //   type: "builtin",
+    //   builtinShape: "torus",
+    //   color: "#00C2FF",
+    //   colorFar: "#0033aa",
+    //   particleSize: 1.8,
+    //   autoRotateY: 0.20,
+    //   initialRotationY: 0,
+    //   particleCount: 320,
+    //   showLines: false,        // pure particles — no lines
+    // },
   },
   {
     sectionId: "service-predictive",
     label: "Predictive Modeling",
     sublabel: "AI-driven forecasting at enterprise scale",
     shape: {
-      type: "builtin",
-      builtinShape: "helix",
+      type: "glb",
+      modelPath: `${import.meta.env.BASE_URL}models/watches.glb`,
+      rotationX: 45,   // corrects the -45 bake
+      rotationY: 0,
+      rotationZ: 0,   // corrects the -90 Z bake
+      particleCount: 600,
+      modelScale: 1.0,
+      autoRotateY: 0.3,  // looks great rotating slowly
       color: "#00FFB2",
       colorFar: "#006644",
       particleSize: 1.6,
-      autoRotateY: 0.25,
+
       initialRotationY: 0,
-      particleCount: 280,
-      showLines: true,
-      lineOpacity: 0.08,
+
+      showLines: false,
+
     },
   },
   {
