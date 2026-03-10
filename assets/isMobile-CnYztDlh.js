@@ -1,0 +1,1 @@
+import{r as t}from"./vendor-router-oqSPMrfB.js";function o(e=768){const[i,r]=t.useState(window.innerWidth<e);return t.useEffect(()=>{const n=()=>r(window.innerWidth<e);return window.addEventListener("resize",n),()=>window.removeEventListener("resize",n)},[e]),i}export{o as u};
