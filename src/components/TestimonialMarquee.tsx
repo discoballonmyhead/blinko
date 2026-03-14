@@ -36,6 +36,7 @@ function TestimonialCard({ t }: { t: Testimonial }) {
             flexShrink: 0, width: 320, padding: "24px 26px",
             background: "rgba(8,15,31,0.88)", backdropFilter: "blur(12px)",
             border: "1px solid rgba(255,255,255,0.07)", borderRadius: 20,
+            boxShadow: "0 8px 32px rgba(0,194,255,0.06)",
             marginRight: 16,
         }}>
             <svg
@@ -84,6 +85,7 @@ function MarqueeRow({ items, direction }: { items: Testimonial[]; direction: "le
     const trackRef = useRef<HTMLDivElement>(null);
     const animRef = useRef<number>(0);
     const posRef = useRef(direction === "right" ? -items.length * 168 : 0);
+    const pausedRef = useRef(false);
     const speed = 0.45;
 
     useEffect(() => {
@@ -95,14 +97,16 @@ function MarqueeRow({ items, direction }: { items: Testimonial[]; direction: "le
         const totalW = items.length * cardW;
 
         function animate() {
-            if (direction === "left") {
-                posRef.current -= speed;
-                if (posRef.current <= -totalW) posRef.current = 0;
-            } else {
-                posRef.current += speed;
-                if (posRef.current >= 0) posRef.current = -totalW;
+            if (!pausedRef.current) {
+                if (direction === "left") {
+                    posRef.current -= speed;
+                    if (posRef.current <= -totalW) posRef.current = 0;
+                } else {
+                    posRef.current += speed;
+                    if (posRef.current >= 0) posRef.current = -totalW;
+                }
+                if (track) track.style.transform = `translateX(${posRef.current}px)`;
             }
-            if (track) track.style.transform = `translateX(${posRef.current}px)`;
             animRef.current = requestAnimationFrame(animate);
         }
 
@@ -128,6 +132,8 @@ function MarqueeRow({ items, direction }: { items: Testimonial[]; direction: "le
             }} />
             <div
                 ref={trackRef}
+                onMouseEnter={() => { pausedRef.current = true; }}
+                onMouseLeave={() => { pausedRef.current = false; }}
                 style={{ display: "flex", willChange: "transform" }}
             >
                 {doubled.map((t, i) => (

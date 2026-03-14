@@ -124,8 +124,8 @@ export function HeroParticleField({
     });
 
     // Parallax depth multipliers: far particles barely move, near ones shift more
-    // max parallax offset = 4% of canvas in each direction
-    const PARALLAX_STRENGTH = 0.04;
+    // max parallax offset = 2.5% of canvas in each direction
+    const PARALLAX_STRENGTH = 0.025;
 
     let raf: number;
     let t = 0;
