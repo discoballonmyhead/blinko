@@ -50,7 +50,9 @@
 export type ShapeType = "builtin" | "svg" | "glb";
 export type BuiltinShape =
   | "sphere" | "torus" | "cube" | "cylinder" | "cone"
-  | "helix" | "grid" | "ring" | "dna" | "wave";
+  | "helix" | "grid" | "ring" | "dna" | "wave"
+  | "network" | "piechart" | "scatter" | "boxplot"
+  | "neural" | "eye";
 
 export interface ParticleShapeConfig {
   type: ShapeType;
@@ -96,6 +98,15 @@ export interface ParticleShapeConfig {
   showLines?: boolean;
   /** Opacity of connection lines (0–1). Default: 0.10 */
   lineOpacity?: number;
+
+  // ── morphing ────────────────────────────────────────────────────
+  /** Array of builtin shapes to auto-cycle between.
+   *  When set, particles morph through these shapes in a loop.
+   *  holdSeconds: time to hold each shape (default 2.5s)
+   *  morphSeconds: transition duration (default 1.5s) */
+  morphTargets?: BuiltinShape[];
+  morphHoldSeconds?: number;
+  morphTransitionSeconds?: number;
 }
 
 export interface SectionParticleConfig {
@@ -124,96 +135,57 @@ export const particleGlobalConfig = {
 // index 2 → text LEFT  / shape RIGHT  ...
 
 export const sectionParticles: SectionParticleConfig[] = [
+  // ── Blink Analytics: morphing chart types — pie → scatter → boxplot
   {
     sectionId: "service-analytics",
-    label: "Advanced Analytics",
-    sublabel: "Real-time intelligence from your data",
-    shape: {
-      type: "glb",
-      modelPath: `${import.meta.env.BASE_URL}models/Ai_Chart.glb`,
-      rotationX: -90,  // best guess — may need tweaking
-      rotationY: 0,
-      rotationZ: 0,
-      particleCount: 2000,
-      modelScale: 1.0,
-      color: "#00C2FF",
-      colorFar: "#001133",
-      autoRotateY: 0.2,
-      showLines: false,
-    }
-    // shape: {
-    //   type: "builtin",
-    //   builtinShape: "torus",
-    //   color: "#00C2FF",
-    //   colorFar: "#0033aa",
-    //   particleSize: 1.8,
-    //   autoRotateY: 0.20,
-    //   initialRotationY: 0,
-    //   particleCount: 320,
-    //   showLines: false,        // pure particles — no lines
-    // },
-  },
-  {
-    sectionId: "service-predictive",
-    label: "Predictive Modeling",
-    sublabel: "AI-driven forecasting at enterprise scale",
-    shape: {
-      type: "glb",
-      modelPath: `${import.meta.env.BASE_URL}models/watches.glb`,
-      rotationX: 45,   // corrects the -45 bake
-      rotationY: 0,
-      rotationZ: 0,   // corrects the -90 Z bake
-      particleCount: 600,
-      modelScale: 1.0,
-      autoRotateY: 0.3,  // looks great rotating slowly
-      color: "#00FFB2",
-      colorFar: "#006644",
-      particleSize: 1.6,
-
-      initialRotationY: 0,
-
-      showLines: true,
-
-    },
-  },
-  {
-    sectionId: "service-engineering",
-    label: "Data Engineering",
-    sublabel: "Infrastructure built to scale with you",
+    label: "Blink Analytics",
+    sublabel: "Statistical analysis, reporting & dashboards",
     shape: {
       type: "builtin",
-      builtinShape: "cube",
-      color: "#7B61FF",
-      colorFar: "#220066",
-      particleSize: 1.7,
-      autoRotateY: 0,          // static — no rotation
-      initialRotationY: 35,    // locked at this angle permanently
+      builtinShape: "boxplot",
+      color: "#00C2FF",
+      colorFar: "#002244",
+      particleSize: 1.2,
+      autoRotateY: 0.12,
+      initialRotationY: 0,
       particleCount: 400,
-      showLines: true,
-      lineOpacity: 0.12,
+      showLines: false,
     },
   },
-
-  // ── GLB example ────────────────────────────────────────────────────────────
-  // Uncomment and fill in modelPath after placing file in /public/models/
-  // {
-  //   sectionId: "service-yourname",
-  //   label: "Your Section",
-  //   sublabel: "Your subtitle",
-  //   shape: {
-  //     type: "glb",
-  //     modelPath: "/models/your-model.glb",
-  //     rotationX: 0,          // baked rotation during sampling
-  //     rotationY: 0,
-  //     rotationZ: 0,
-  //     modelScale: 1.0,
-  //     autoRotateY: 0.15,     // live rotation speed (0 = static)
-  //     initialRotationY: 20,  // starting angle
-  //     color: "#00C2FF",
-  //     colorFar: "#002244",
-  //     particleSize: 1.5,
-  //     particleCount: 350,
-  //     showLines: false,
-  //   },
-  // },
+  // ── Blink Intelligence: grid → cube → wave (raw data → structure → predictions)
+  {
+    sectionId: "service-intelligence",
+    label: "Blink Intelligence",
+    sublabel: "Custom platforms, pipelines & predictive modeling",
+    shape: {
+      type: "builtin",
+      builtinShape: "dna",
+      color: "#00FFB2",
+      colorFar: "#004D33",
+      particleSize: 1.3,
+      autoRotateY: 0.15,
+      initialRotationY: 0,
+      particleCount: 400,
+      showLines: true,
+      lineOpacity: 0.14,
+    },
+  },
+  // ── Blink AI: network → sphere (neural net) → dna (learning patterns)
+  {
+    sectionId: "service-ai",
+    label: "Blink AI",
+    sublabel: "AI-powered insights & anomaly detection",
+    shape: {
+      type: "builtin",
+      builtinShape: "network",
+      color: "#7B61FF",
+      colorFar: "#1A0044",
+      particleSize: 1.2,
+      autoRotateY: 0.10,
+      initialRotationY: 0,
+      particleCount: 320,
+      showLines: true,
+      lineOpacity: 0.20,
+    },
+  },
 ];

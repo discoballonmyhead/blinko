@@ -245,157 +245,37 @@ export function HomePage() {
                 />
               </FadeUp>
 
-              {isMobile ? (
-                /* ── Mobile: simple stacked cards ── */
-                <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-                  {/* Case study cards */}
-                  {siteConfig.caseStudies.slice(0, 3).map((cs, i) => (
-                    <FadeUp key={i} delay={i * 0.08}>
-                      <div style={{
-                        background: i === 2
-                          ? "linear-gradient(160deg, rgba(0,102,255,0.12), rgba(0,194,255,0.04))"
-                          : i === 1
-                            ? "rgba(0,194,255,0.04)"
-                            : "rgba(8,15,31,0.88)",
-                        border: `1px solid ${i === 2 ? "rgba(0,102,255,0.18)" : i === 1 ? "rgba(0,194,255,0.12)" : "rgba(255,255,255,0.07)"}`,
-                        borderRadius: 20, padding: "28px 24px",
-                        display: "flex", flexDirection: "row", alignItems: "center", gap: 20,
-                      }}>
-                        <div style={{ flexShrink: 0 }}>
-                          <div className="gradient-text" style={{ fontFamily: "Syne, sans-serif", fontSize: "2.6rem", fontWeight: 800, lineHeight: 1 }}>
-                            {cs.metric}
-                          </div>
-                          <div style={{ color: "#00FFB2", fontSize: 10, fontWeight: 700, marginTop: 4, letterSpacing: "0.08em", textTransform: "uppercase" }}>
-                            {cs.label}
-                          </div>
+              <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(3, 1fr)", gap: isMobile ? 12 : 20 }}>
+                {siteConfig.caseStudies.slice(0, 3).map((cs, i) => (
+                  <FadeUp key={cs.client} delay={i * 0.1}>
+                    <div style={{
+                      background: i === 2
+                        ? "linear-gradient(160deg, rgba(0,102,255,0.12), rgba(0,194,255,0.04))"
+                        : i === 1
+                          ? "rgba(0,194,255,0.04)"
+                          : "rgba(8,15,31,0.88)",
+                      border: `1px solid ${i === 2 ? "rgba(0,102,255,0.18)" : i === 1 ? "rgba(0,194,255,0.12)" : "rgba(255,255,255,0.07)"}`,
+                      borderRadius: 24, padding: isMobile ? "28px 24px" : "44px 36px", height: "100%",
+                      display: "flex", flexDirection: "column", justifyContent: "space-between",
+                    }}>
+                      <div>
+                        <div className="gradient-text" style={{ fontFamily: "Syne, sans-serif", fontSize: isMobile ? "2.6rem" : "clamp(3rem,5vw,4.2rem)", fontWeight: 800, lineHeight: 1 }}>
+                          {cs.metric}
                         </div>
-                        <div>
-                          <p style={{ color: "rgba(255,255,255,0.45)", fontSize: "0.85rem", lineHeight: 1.65, margin: 0 }}>
-                            {cs.description}
-                          </p>
-                          <span style={{ color: "rgba(255,255,255,0.15)", fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", marginTop: 8, display: "block" }}>
-                            {cs.client}
-                          </span>
+                        <div style={{ color: "#00FFB2", fontSize: isMobile ? 10 : 12, fontWeight: 700, margin: "8px 0 20px", letterSpacing: "0.08em", textTransform: "uppercase" }}>
+                          {cs.label}
                         </div>
+                        <p style={{ color: "rgba(255,255,255,0.45)", fontSize: "0.9rem", lineHeight: 1.75, margin: 0 }}>
+                          {cs.description}
+                        </p>
                       </div>
-                    </FadeUp>
-                  ))}
-                  {/* Stat boxes — 2-col grid on mobile */}
-                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginTop: 4 }}>
-                    {siteConfig.stats.slice(0, 3).map((s, i) => (
-                      <FadeUp key={i} delay={0.24 + i * 0.07} style={{ gridColumn: i === 2 ? "span 2" : "span 1" }}>
-                        <div style={{
-                          background: "rgba(8,15,31,0.6)", border: "1px solid rgba(255,255,255,0.06)",
-                          borderRadius: 20, padding: "24px 20px",
-                          display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", textAlign: "center",
-                        }}>
-                          <div className="gradient-text" style={{ fontFamily: "Syne, sans-serif", fontSize: "2rem", fontWeight: 800, lineHeight: 1 }}>
-                            {s.value}
-                          </div>
-                          <div style={{ color: "rgba(255,255,255,0.35)", fontSize: "0.75rem", marginTop: 8, lineHeight: 1.5 }}>
-                            {s.label}
-                          </div>
-                        </div>
-                      </FadeUp>
-                    ))}
-                  </div>
-                </div>
-              ) : (
-                /* ── Desktop: original 12-col bento ── */
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(12, 1fr)", gap: 16 }}>
-                  <div style={{ gridColumn: "span 5" }}>
-                    <FadeUp delay={0} style={{ height: "100%" }}>
-                      <div style={{
-                        background: "rgba(8,15,31,0.88)", border: "1px solid rgba(255,255,255,0.07)",
-                        borderRadius: 24, padding: "44px 40px", height: "100%",
-                        display: "flex", flexDirection: "column", justifyContent: "space-between",
-                      }}>
-                        <div>
-                          <div className="gradient-text" style={{ fontFamily: "Syne, sans-serif", fontSize: "clamp(3.5rem,6vw,5rem)", fontWeight: 800, lineHeight: 1 }}>
-                            {siteConfig.caseStudies[0]?.metric}
-                          </div>
-                          <div style={{ color: "#00FFB2", fontSize: 12, fontWeight: 700, margin: "8px 0 20px", letterSpacing: "0.08em", textTransform: "uppercase" }}>
-                            {siteConfig.caseStudies[0]?.label}
-                          </div>
-                          <p style={{ color: "rgba(255,255,255,0.45)", fontSize: "0.95rem", lineHeight: 1.75 }}>
-                            {siteConfig.caseStudies[0]?.description}
-                          </p>
-                        </div>
-                        <span style={{ color: "rgba(255,255,255,0.15)", fontSize: 11, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", marginTop: 28, display: "block" }}>
-                          {siteConfig.caseStudies[0]?.client}
-                        </span>
-                      </div>
-                    </FadeUp>
-                  </div>
-                  <div style={{ gridColumn: "span 4" }}>
-                    <FadeUp delay={0.1} style={{ height: "100%" }}>
-                      <div style={{
-                        background: "rgba(0,194,255,0.04)", border: "1px solid rgba(0,194,255,0.12)",
-                        borderRadius: 24, padding: "44px 36px", height: "100%",
-                        display: "flex", flexDirection: "column", justifyContent: "space-between",
-                      }}>
-                        <div>
-                          <div className="gradient-text" style={{ fontFamily: "Syne, sans-serif", fontSize: "clamp(3.5rem,6vw,5rem)", fontWeight: 800, lineHeight: 1 }}>
-                            {siteConfig.caseStudies[1]?.metric}
-                          </div>
-                          <div style={{ color: "#00FFB2", fontSize: 12, fontWeight: 700, margin: "8px 0 20px", letterSpacing: "0.08em", textTransform: "uppercase" }}>
-                            {siteConfig.caseStudies[1]?.label}
-                          </div>
-                          <p style={{ color: "rgba(255,255,255,0.45)", fontSize: "0.95rem", lineHeight: 1.75 }}>
-                            {siteConfig.caseStudies[1]?.description}
-                          </p>
-                        </div>
-                        <span style={{ color: "rgba(255,255,255,0.15)", fontSize: 11, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", marginTop: 28, display: "block" }}>
-                          {siteConfig.caseStudies[1]?.client}
-                        </span>
-                      </div>
-                    </FadeUp>
-                  </div>
-                  <div style={{ gridColumn: "span 3", gridRow: "span 2" }}>
-                    <FadeUp delay={0.15} style={{ height: "100%" }}>
-                      <div style={{
-                        background: "linear-gradient(160deg, rgba(0,102,255,0.12), rgba(0,194,255,0.04))",
-                        border: "1px solid rgba(0,102,255,0.18)",
-                        borderRadius: 24, padding: "40px 28px", height: "100%",
-                        display: "flex", flexDirection: "column", justifyContent: "space-between",
-                      }}>
-                        <div>
-                          <div className="gradient-text" style={{ fontFamily: "Syne, sans-serif", fontSize: "clamp(3rem,5vw,4.2rem)", fontWeight: 800, lineHeight: 1 }}>
-                            {siteConfig.caseStudies[2]?.metric}
-                          </div>
-                          <div style={{ color: "#00FFB2", fontSize: 12, fontWeight: 700, margin: "8px 0 20px", letterSpacing: "0.08em", textTransform: "uppercase" }}>
-                            {siteConfig.caseStudies[2]?.label}
-                          </div>
-                          <p style={{ color: "rgba(255,255,255,0.45)", fontSize: "0.88rem", lineHeight: 1.75 }}>
-                            {siteConfig.caseStudies[2]?.description}
-                          </p>
-                        </div>
-                        <span style={{ color: "rgba(255,255,255,0.15)", fontSize: 11, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", marginTop: 28, display: "block" }}>
-                          {siteConfig.caseStudies[2]?.client}
-                        </span>
-                      </div>
-                    </FadeUp>
-                  </div>
-                  {siteConfig.stats.slice(0, 3).map((s, i) => (
-                    <div key={i} style={{ gridColumn: "span 3" }}>
-                      <FadeUp delay={0.2 + i * 0.08} style={{ height: "100%" }}>
-                        <div style={{
-                          background: "rgba(8,15,31,0.6)", border: "1px solid rgba(255,255,255,0.06)",
-                          borderRadius: 24, padding: "32px 28px", height: "100%",
-                          display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", textAlign: "center",
-                        }}>
-                          <div className="gradient-text" style={{ fontFamily: "Syne, sans-serif", fontSize: "2.6rem", fontWeight: 800, lineHeight: 1 }}>
-                            {s.value}
-                          </div>
-                          <div style={{ color: "rgba(255,255,255,0.35)", fontSize: "0.78rem", marginTop: 10, lineHeight: 1.5, maxWidth: 120 }}>
-                            {s.label}
-                          </div>
-                        </div>
-                      </FadeUp>
+                      <span style={{ color: "rgba(255,255,255,0.15)", fontSize: 11, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", marginTop: 24, display: "block" }}>
+                        {cs.client}
+                      </span>
                     </div>
-                  ))}
-                </div>
-              )}
+                  </FadeUp>
+                ))}
+              </div>
             </div>
           </section>
         )}

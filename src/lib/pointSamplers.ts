@@ -28,6 +28,12 @@ export function sampleBuiltin(shape: BuiltinShape, n: number): Point3D[] {
     case "ring": return sampleRing(n);
     case "dna": return sampleDNA(n);
     case "wave": return sampleWave(n);
+    case "network": return sampleNetwork(n);
+    case "piechart": return samplePieChart(n);
+    case "scatter": return sampleScatter(n);
+    case "boxplot": return sampleBoxplot(n);
+    case "neural": return sampleNeural(n);
+    case "eye": return sampleEye(n);
     default: return sampleSphere(n);
   }
 }
@@ -114,6 +120,339 @@ function sampleWave(n: number): Point3D[] {
       pts.push({ x, y: 0.3 * Math.sin(x * 4 + z * 3) * Math.cos(z * 2), z });
     }
   return pts;
+}
+
+// ── NETWORK GRAPH ─────────────────────────────────────────────────────────────
+// Clustered nodes with hub-spoke layout — looks like a social network / knowledge graph
+
+function sampleNetwork(n: number): Point3D[] {
+  const clusterCount = 6;
+  const pts: Point3D[] = [];
+
+  // Generate cluster centers spread across the volume
+  const centers: Point3D[] = [];
+  for (let c = 0; c < clusterCount; c++) {
+    const phi = Math.acos(1 - 2 * (c + 0.5) / clusterCount);
+    const theta = Math.PI * (1 + Math.sqrt(5)) * c;
+    const r = 0.55 + Math.random() * 0.25;
+    centers.push({
+      x: r * Math.sin(phi) * Math.cos(theta),
+      y: r * Math.cos(phi),
+      z: r * Math.sin(phi) * Math.sin(theta),
+    });
+  }
+
+  // Place hub node at each cluster center
+  for (const c of centers) {
+    pts.push({ x: c.x, y: c.y, z: c.z });
+  }
+
+  // Distribute remaining particles around cluster centers with varying spread
+  const remaining = n - clusterCount;
+  for (let i = 0; i < remaining; i++) {
+    const cluster = centers[i % clusterCount];
+    const spread = 0.12 + Math.random() * 0.22;
+    // Random direction
+    const phi = Math.acos(2 * Math.random() - 1);
+    const theta = Math.random() * Math.PI * 2;
+    const r = spread * Math.cbrt(Math.random()); // cube root for uniform volume
+    pts.push({
+      x: cluster.x + r * Math.sin(phi) * Math.cos(theta),
+      y: cluster.y + r * Math.cos(phi),
+      z: cluster.z + r * Math.sin(phi) * Math.sin(theta),
+    });
+  }
+
+  // Add a few "bridge" nodes between clusters for inter-cluster connections
+  const bridgeCount = Math.floor(n * 0.08);
+  for (let i = 0; i < bridgeCount && pts.length < n + bridgeCount; i++) {
+    const c1 = centers[Math.floor(Math.random() * clusterCount)];
+    const c2 = centers[Math.floor(Math.random() * clusterCount)];
+    const t = 0.3 + Math.random() * 0.4;
+    pts.push({
+      x: c1.x + (c2.x - c1.x) * t + (Math.random() - 0.5) * 0.06,
+      y: c1.y + (c2.y - c1.y) * t + (Math.random() - 0.5) * 0.06,
+      z: c1.z + (c2.z - c1.z) * t + (Math.random() - 0.5) * 0.06,
+    });
+  }
+
+  return pts.slice(0, n);
+}
+
+// ── CHART SHAPES (for morphing analytics) ─────────────────────────────────────
+
+function samplePieChart(n: number): Point3D[] {
+  const pts: Point3D[] = [];
+  // Pie with 5 slices of varying sizes
+  const slices = [0.28, 0.22, 0.20, 0.17, 0.13];
+  const R = 0.75;
+  let startAngle = 0;
+
+  // Points along the outer rim and slice dividers
+  const rimPoints = Math.floor(n * 0.55);
+  const fillPoints = n - rimPoints;
+
+  // Outer rim
+  for (let i = 0; i < rimPoints; i++) {
+    const angle = (i / rimPoints) * Math.PI * 2;
+    pts.push({
+      x: R * Math.cos(angle),
+      y: R * Math.sin(angle),
+      z: (Math.random() - 0.5) * 0.06,
+    });
+  }
+
+  // Slice divider lines (spokes from center to rim)
+  startAngle = 0;
+  const spokePoints = Math.floor(fillPoints * 0.3);
+  for (let s = 0; s < slices.length; s++) {
+    const angle = startAngle;
+    const pointsPerSpoke = Math.floor(spokePoints / slices.length);
+    for (let i = 0; i < pointsPerSpoke; i++) {
+      const r = (i / pointsPerSpoke) * R;
+      pts.push({
+        x: r * Math.cos(angle),
+        y: r * Math.sin(angle),
+        z: (Math.random() - 0.5) * 0.06,
+      });
+    }
+    startAngle += slices[s] * Math.PI * 2;
+  }
+
+  // Fill remaining with scattered points inside slices
+  while (pts.length < n) {
+    const angle = Math.random() * Math.PI * 2;
+    const r = Math.sqrt(Math.random()) * R * 0.85;
+    pts.push({
+      x: r * Math.cos(angle),
+      y: r * Math.sin(angle),
+      z: (Math.random() - 0.5) * 0.06,
+    });
+  }
+
+  return pts.slice(0, n);
+}
+
+function sampleScatter(n: number): Point3D[] {
+  const pts: Point3D[] = [];
+  const spread = 0.85;
+
+  // Axes
+  const axisPoints = Math.floor(n * 0.12);
+  // X axis
+  for (let i = 0; i < axisPoints / 2; i++) {
+    const t = (i / (axisPoints / 2)) * spread * 2 - spread;
+    pts.push({ x: t, y: -spread, z: (Math.random() - 0.5) * 0.04 });
+  }
+  // Y axis
+  for (let i = 0; i < axisPoints / 2; i++) {
+    const t = (i / (axisPoints / 2)) * spread * 2 - spread;
+    pts.push({ x: -spread, y: t, z: (Math.random() - 0.5) * 0.04 });
+  }
+
+  // Scatter dots — positive correlation with noise
+  while (pts.length < n) {
+    const base = Math.random();
+    const x = (base * 2 - 1) * spread * 0.85;
+    const y = (base * 2 - 1) * spread * 0.85 + (Math.random() - 0.5) * spread * 0.5;
+    pts.push({
+      x: x,
+      y: Math.max(-spread, Math.min(spread, y)),
+      z: (Math.random() - 0.5) * 0.06,
+    });
+  }
+
+  return pts.slice(0, n);
+}
+
+function sampleBoxplot(n: number): Point3D[] {
+  const pts: Point3D[] = [];
+  // 3 box plots side by side
+  const boxes = [
+    { cx: -0.55, median: 0.1, q1: -0.15, q3: 0.35, lo: -0.45, hi: 0.65 },
+    { cx: 0.0,   median: -0.05, q1: -0.30, q3: 0.20, lo: -0.60, hi: 0.50 },
+    { cx: 0.55,  median: 0.20, q1: -0.05, q3: 0.45, lo: -0.35, hi: 0.75 },
+  ];
+  const boxW = 0.22;
+  const perBox = Math.floor(n / boxes.length);
+
+  for (const box of boxes) {
+    const allocated = Math.min(perBox, n - pts.length);
+    const edges = Math.floor(allocated * 0.6);
+    const whiskerPts = Math.floor(allocated * 0.2);
+    const medianPts = allocated - edges - whiskerPts;
+
+    // Box edges (q1 to q3)
+    for (let i = 0; i < edges; i++) {
+      const side = i % 4;
+      const t = Math.random();
+      let x: number, y: number;
+      if (side === 0) { x = box.cx - boxW; y = box.q1 + t * (box.q3 - box.q1); }      // left
+      else if (side === 1) { x = box.cx + boxW; y = box.q1 + t * (box.q3 - box.q1); }  // right
+      else if (side === 2) { x = box.cx - boxW + t * boxW * 2; y = box.q1; }            // bottom
+      else { x = box.cx - boxW + t * boxW * 2; y = box.q3; }                            // top
+      pts.push({ x, y, z: (Math.random() - 0.5) * 0.04 });
+    }
+
+    // Median line
+    for (let i = 0; i < medianPts; i++) {
+      const t = Math.random();
+      pts.push({
+        x: box.cx - boxW + t * boxW * 2,
+        y: box.median,
+        z: (Math.random() - 0.5) * 0.04,
+      });
+    }
+
+    // Whiskers (vertical lines + caps)
+    for (let i = 0; i < whiskerPts; i++) {
+      const upper = i % 2 === 0;
+      if (upper) {
+        // Upper whisker
+        const t = Math.random();
+        if (t < 0.7) {
+          pts.push({ x: box.cx, y: box.q3 + t / 0.7 * (box.hi - box.q3), z: 0 });
+        } else {
+          // Cap
+          pts.push({ x: box.cx + (Math.random() - 0.5) * boxW * 0.6, y: box.hi, z: 0 });
+        }
+      } else {
+        // Lower whisker
+        const t = Math.random();
+        if (t < 0.7) {
+          pts.push({ x: box.cx, y: box.q1 - t / 0.7 * (box.q1 - box.lo), z: 0 });
+        } else {
+          pts.push({ x: box.cx + (Math.random() - 0.5) * boxW * 0.6, y: box.lo, z: 0 });
+        }
+      }
+    }
+  }
+
+  while (pts.length < n) {
+    pts.push({ x: (Math.random() - 0.5) * 0.1, y: (Math.random() - 0.5) * 0.1, z: 0 });
+  }
+
+  return pts.slice(0, n);
+}
+
+// ── NEURAL NETWORK ────────────────────────────────────────────────────────────
+// Vertical columns of nodes like a neural network diagram (input → hidden → output)
+
+function sampleNeural(n: number): Point3D[] {
+  const pts: Point3D[] = [];
+  // 5 layers with varying node counts
+  const layers = [
+    { x: -0.8, nodes: 4 },   // input
+    { x: -0.35, nodes: 7 },  // hidden 1
+    { x: 0.0, nodes: 8 },    // hidden 2
+    { x: 0.35, nodes: 6 },   // hidden 3
+    { x: 0.8, nodes: 3 },    // output
+  ];
+
+  const totalNodes = layers.reduce((s, l) => s + l.nodes, 0);
+  // Points per node for the node clusters
+  const nodePoints = Math.floor(n * 0.45);
+
+  // Place clustered particles at each node position
+  for (const layer of layers) {
+    for (let node = 0; node < layer.nodes; node++) {
+      const ny = ((node + 0.5) / layer.nodes) * 1.6 - 0.8;
+      const count = Math.round((nodePoints / totalNodes));
+      for (let i = 0; i < count && pts.length < nodePoints; i++) {
+        // Small cluster around the node center
+        const spread = 0.045;
+        const phi = Math.acos(2 * Math.random() - 1);
+        const theta = Math.random() * Math.PI * 2;
+        const r = spread * Math.cbrt(Math.random());
+        pts.push({
+          x: layer.x + r * Math.sin(phi) * Math.cos(theta),
+          y: ny + r * Math.cos(phi),
+          z: r * Math.sin(phi) * Math.sin(theta),
+        });
+      }
+    }
+  }
+
+  // Connection lines between adjacent layers — scatter particles along them
+  while (pts.length < n) {
+    const li = Math.floor(Math.random() * (layers.length - 1));
+    const fromLayer = layers[li];
+    const toLayer = layers[li + 1];
+    const fromNode = Math.floor(Math.random() * fromLayer.nodes);
+    const toNode = Math.floor(Math.random() * toLayer.nodes);
+    const fy = ((fromNode + 0.5) / fromLayer.nodes) * 1.6 - 0.8;
+    const ty = ((toNode + 0.5) / toLayer.nodes) * 1.6 - 0.8;
+    const t = Math.random();
+    pts.push({
+      x: fromLayer.x + (toLayer.x - fromLayer.x) * t + (Math.random() - 0.5) * 0.02,
+      y: fy + (ty - fy) * t + (Math.random() - 0.5) * 0.02,
+      z: (Math.random() - 0.5) * 0.04,
+    });
+  }
+
+  return pts.slice(0, n);
+}
+
+// ── EYE / IRIS ────────────────────────────────────────────────────────────────
+// An iris with pupil — the "all-seeing" AI eye
+
+function sampleEye(n: number): Point3D[] {
+  const pts: Point3D[] = [];
+
+  // Outer eye shape — almond/lemon shape using parametric curve
+  const outlinePoints = Math.floor(n * 0.25);
+  for (let i = 0; i < outlinePoints; i++) {
+    const t = (i / outlinePoints) * Math.PI * 2;
+    const rx = 0.9;  // wider
+    const ry = 0.45; // narrower vertically
+    // Lemon shape: multiply y by cos to pinch the ends
+    const x = rx * Math.cos(t);
+    const squeeze = Math.cos(t);
+    const y = ry * Math.sin(t) * Math.abs(squeeze) ** 0.3 * Math.sign(Math.sin(t));
+    pts.push({ x, y, z: (Math.random() - 0.5) * 0.04 });
+  }
+
+  // Iris — concentric rings
+  const irisPoints = Math.floor(n * 0.45);
+  const irisR = 0.35;
+  for (let i = 0; i < irisPoints; i++) {
+    const ring = Math.random();
+    const r = irisR * (0.3 + ring * 0.7); // bias toward outer iris
+    const theta = Math.random() * Math.PI * 2;
+    pts.push({
+      x: r * Math.cos(theta),
+      y: r * Math.sin(theta),
+      z: (Math.random() - 0.5) * 0.05,
+    });
+  }
+
+  // Pupil — dense center
+  const pupilPoints = Math.floor(n * 0.15);
+  const pupilR = 0.12;
+  for (let i = 0; i < pupilPoints; i++) {
+    const r = pupilR * Math.sqrt(Math.random());
+    const theta = Math.random() * Math.PI * 2;
+    pts.push({
+      x: r * Math.cos(theta),
+      y: r * Math.sin(theta),
+      z: (Math.random() - 0.5) * 0.03,
+    });
+  }
+
+  // Iris radial lines (spokes)
+  const spokePoints = n - pts.length;
+  const spokeCount = 12;
+  for (let i = 0; i < spokePoints; i++) {
+    const spoke = (i % spokeCount) / spokeCount * Math.PI * 2;
+    const r = pupilR + Math.random() * (irisR - pupilR);
+    pts.push({
+      x: r * Math.cos(spoke) + (Math.random() - 0.5) * 0.015,
+      y: r * Math.sin(spoke) + (Math.random() - 0.5) * 0.015,
+      z: (Math.random() - 0.5) * 0.04,
+    });
+  }
+
+  return pts.slice(0, n);
 }
 
 // ── SVG PATH ──────────────────────────────────────────────────────────────────

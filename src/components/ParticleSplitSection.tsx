@@ -42,6 +42,10 @@ interface CanvasProps {
   showLines: boolean;
   lineOpacity: number;
   progressRef: React.MutableRefObject<number>;
+  /** For morphing mode: multiple target point arrays to cycle between */
+  morphPointSets?: Point3D[][];
+  morphHoldSeconds?: number;
+  morphTransitionSeconds?: number;
 }
 
 function ShapeCanvas({
@@ -49,6 +53,9 @@ function ShapeCanvas({
   autoRotateY, initialRotationY,
   showLines, lineOpacity,
   progressRef,
+  morphPointSets,
+  morphHoldSeconds = 2.5,
+  morphTransitionSeconds = 1.8,
 }: CanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -63,6 +70,15 @@ function ShapeCanvas({
     const FOV = 2.8;
 
     let rotY = initialRotationY * (Math.PI / 180);
+
+    // Morphing state
+    const isMorphing = morphPointSets && morphPointSets.length > 1;
+    let morphShapeIdx = 0;
+    let morphStartTime = performance.now();
+    let morphPhase: "hold" | "transition" = "hold";
+    let currentTargetPts = morphPointSets ? morphPointSets[0] : points;
+    let nextTargetPts = morphPointSets ? morphPointSets[1 % morphPointSets.length] : points;
+    let morphT = 0; // 0-1 transition progress between shapes
 
     function resize() {
       canvas.width = canvas.offsetWidth * dpr;
@@ -88,8 +104,8 @@ function ShapeCanvas({
       const depth = pz + 1.5;
       const scale = FOV / Math.max(depth, 0.1);
       return {
-        sx: W / 2 + px * scale * Math.min(W, H) * 0.10,
-        sy: H / 2 - py * scale * Math.min(W, H) * 0.10,
+        sx: W / 2 + px * scale * Math.min(W, H) * 0.32,
+        sy: H / 2 - py * scale * Math.min(W, H) * 0.32,
         scale,
       };
     }
@@ -97,21 +113,61 @@ function ShapeCanvas({
     let raf: number;
     function render() {
       raf = requestAnimationFrame(render);
+      const now = performance.now();
       const W = canvas.offsetWidth, H = canvas.offsetHeight;
       ctx.clearRect(0, 0, W, H);
 
-      const morphP = smoothstep(progressRef.current);
+      const scrollMorphP = smoothstep(progressRef.current);
+
+      // Update morphing state machine
+      if (isMorphing && scrollMorphP > 0.3) {
+        const elapsed = (now - morphStartTime) / 1000;
+        if (morphPhase === "hold") {
+          morphT = 0;
+          if (elapsed > morphHoldSeconds) {
+            morphPhase = "transition";
+            morphStartTime = now;
+          }
+        } else {
+          morphT = Math.min(1, elapsed / morphTransitionSeconds);
+          if (morphT >= 1) {
+            // Transition complete — advance to next shape
+            morphPhase = "hold";
+            morphStartTime = now;
+            morphShapeIdx = (morphShapeIdx + 1) % morphPointSets!.length;
+            currentTargetPts = morphPointSets![morphShapeIdx];
+            nextTargetPts = morphPointSets![(morphShapeIdx + 1) % morphPointSets!.length];
+            morphT = 0;
+          }
+        }
+      }
+
       if (autoRotateY !== 0) rotY += autoRotateY * 0.017;
       const cosR = Math.cos(rotY), sinR = Math.sin(rotY);
+      const smoothMorphT = smoothstep(morphT);
 
       particles.forEach((p, i) => {
-        const pt = points[i];
-        const rx = pt.x * cosR - pt.z * sinR;
-        const rz = pt.x * sinR + pt.z * cosR;
+        // Get target point — interpolate between shapes if morphing
+        let ptx: number, pty: number, ptz: number;
+        if (isMorphing && scrollMorphP > 0.3) {
+          const cpt = currentTargetPts[i % currentTargetPts.length];
+          const npt = nextTargetPts[i % nextTargetPts.length];
+          ptx = lerp(cpt.x, npt.x, smoothMorphT);
+          pty = lerp(cpt.y, npt.y, smoothMorphT);
+          ptz = lerp(cpt.z, npt.z, smoothMorphT);
+        } else {
+          const pt = (isMorphing ? currentTargetPts : points)[i % (isMorphing ? currentTargetPts : points).length];
+          ptx = pt.x;
+          pty = pt.y;
+          ptz = pt.z;
+        }
 
-        const ttx = lerp(p.ox, rx, morphP);
-        const tty = lerp(p.oy, pt.y, morphP);
-        const ttz = lerp(p.oz, rz, morphP);
+        const rx = ptx * cosR - ptz * sinR;
+        const rz = ptx * sinR + ptz * cosR;
+
+        const ttx = lerp(p.ox, rx, scrollMorphP);
+        const tty = lerp(p.oy, pty, scrollMorphP);
+        const ttz = lerp(p.oz, rz, scrollMorphP);
 
         const df = ((rz + 1) / 2);
         const ttr = lerp(r2, r1, df);
@@ -127,13 +183,13 @@ function ShapeCanvas({
 
         const { sx, sy, scale } = project(p.x, p.y, p.z, W, H);
         const depthA = Math.max(0.05, Math.min(1, ((p.z + 1.5) / 3) * 0.85 + 0.15));
-        const tAlpha = morphP > 0.05 ? 0.45 + depthA * 0.55 : 0.06;
+        const tAlpha = scrollMorphP > 0.05 ? 0.45 + depthA * 0.55 : 0.06;
         p.alpha = lerp(p.alpha, tAlpha, 0.06);
 
-        const pr = Math.max(0.4, particleSize * scale * 0.10);
+        const pr = Math.max(0.3, particleSize * scale * 0.22);
         const cr = Math.round(p.r), cg = Math.round(p.g), cb = Math.round(p.b);
 
-        if (depthA > 0.55 && morphP > 0.25) {
+        if (depthA > 0.55 && scrollMorphP > 0.25) {
           ctx.beginPath();
           ctx.arc(sx, sy, pr * 3.5, 0, Math.PI * 2);
           ctx.fillStyle = `rgba(${cr},${cg},${cb},${p.alpha * 0.07})`;
@@ -145,7 +201,7 @@ function ShapeCanvas({
         ctx.fill();
       });
 
-      if (showLines && morphP > 0.45) {
+      if (showLines && scrollMorphP > 0.45) {
         const maxD = particleGlobalConfig.connectionDistance;
         const maxD2 = maxD * maxD;
         for (let i = 0; i < particles.length; i += 2) {
@@ -155,7 +211,7 @@ function ShapeCanvas({
             const { sx: bx, sy: by } = project(b.x, b.y, b.z, W, H);
             const dx = ax - bx, dy = ay - by, d2 = dx * dx + dy * dy;
             if (d2 < maxD2) {
-              const op = (1 - d2 / maxD2) * lineOpacity * morphP;
+              const op = (1 - d2 / maxD2) * lineOpacity * scrollMorphP;
               const mr = Math.round((a.r + b.r) / 2), mg = Math.round((a.g + b.g) / 2), mb = Math.round((a.b + b.b) / 2);
               ctx.beginPath(); ctx.moveTo(ax, ay); ctx.lineTo(bx, by);
               ctx.strokeStyle = `rgba(${mr},${mg},${mb},${op})`;
@@ -172,7 +228,7 @@ function ShapeCanvas({
       window.removeEventListener("resize", resize);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [points, color, colorFar, particleSize, autoRotateY, initialRotationY, showLines, lineOpacity]);
+  }, [points, color, colorFar, particleSize, autoRotateY, initialRotationY, showLines, lineOpacity, morphPointSets, morphHoldSeconds, morphTransitionSeconds]);
 
   return (
     <canvas
@@ -196,6 +252,7 @@ export function ParticleSplitSection({ config, index, children, className = "", 
   const textRef = useRef<HTMLDivElement>(null);
   const progressRef = useRef(0);
   const [points, setPoints] = useState<Point3D[] | null>(null);
+  const [morphPointSets, setMorphPointSets] = useState<Point3D[][] | null>(null);
   const isMobile = useIsMobile();
 
   const isEven = index % 2 === 0;
@@ -206,10 +263,20 @@ export function ParticleSplitSection({ config, index, children, className = "", 
   useEffect(() => {
     if (isMobile) {
       setPoints(null);
+      setMorphPointSets(null);
       return;
     }
     async function load() {
       const n = particleCount;
+
+      // If morphTargets is set, generate point sets for each target shape
+      if (shape.morphTargets && shape.morphTargets.length > 1) {
+        const sets = shape.morphTargets.map(s => sampleBuiltin(s, n));
+        setPoints(sets[0]);
+        setMorphPointSets(sets);
+        return;
+      }
+
       if (shape.type === "builtin" && shape.builtinShape) {
         setPoints(sampleBuiltin(shape.builtinShape, n));
       } else if (shape.type === "svg" && (shape.svgPath || shape.svgPaths)) {
@@ -319,6 +386,9 @@ export function ParticleSplitSection({ config, index, children, className = "", 
                 showLines={shape.showLines ?? true}
                 lineOpacity={shape.lineOpacity ?? particleGlobalConfig.connectionOpacity}
                 progressRef={progressRef}
+                morphPointSets={morphPointSets ?? undefined}
+                morphHoldSeconds={shape.morphHoldSeconds}
+                morphTransitionSeconds={shape.morphTransitionSeconds}
               />
             )}
             <div style={{
