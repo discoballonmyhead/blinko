@@ -443,13 +443,13 @@ export const siteConfig = {
     subheadline: "Choose the plan that fits your data needs. No hidden fees.",
     plans: [
       {
-        name: "Blink Analytics", price: "From $1,500", period: "/ project",
+        name: "Blink Analytics", price: "From $3,000", period: "/ project",
         description: "For businesses that need clarity on their data without building infrastructure.",
         features: ["Statistical analysis & hypothesis testing", "Business performance reporting", "Data cleaning & preparation", "Interactive dashboards (Power BI, Streamlit, or web app)", "A/B test design & validation", "Email support"],
         cta: "Get Started", ctaPath: "/#contact", highlighted: false,
       },
       {
-        name: "Blink Intelligence", price: "From $4,500", period: "/ month",
+        name: "Blink Intelligence", price: "From $7,000", period: "/ project",
         description: "Your center analytics layer — custom platforms, pipelines, and predictive modeling.",
         features: ["Everything in Blink Analytics", "Custom web dashboards with drill-down capability", "Automated data pipelines & scheduling", "Predictive modeling & churn analysis", "Role-based access for multiple users", "Database design & data infrastructure", "Lightweight internal tools & apps", "Automated alerts for critical data changes"],
         cta: "Most Popular", ctaPath: "/#contact", highlighted: true,
