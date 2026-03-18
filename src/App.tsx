@@ -47,7 +47,7 @@ function MainLayout() {
 
 export default function App() {
   return (
-    <BrowserRouter basename="/blinko/">
+    <BrowserRouter>
       <ScrollToTop />
       <Suspense fallback={<PageShell />}>
         <Routes>
