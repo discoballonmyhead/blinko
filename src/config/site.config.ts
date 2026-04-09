@@ -42,7 +42,7 @@ export const siteConfig = {
   stats: [
     { value: "40%", label: "Increase", client: "Apickle", description: "Automated loan assessments increased the number of clients processed through financial reviews." },
     { value: "$500K+", label: "Protected revenue annually", client: "Fractal", description: "Real-time analytics system for tracking health scores, churn analysis, and early issue detection." },
-    { value: "2,400", label: "Hrs/Year Saved", client: "Alcrest Partners", description: "AI-powered data matching enabled high-confidence outreach, eliminating manual research." },
+    { value: "2,400", label: "Hrs/Year Saved", client: "Real Estate Firm", description: "AI-powered data matching enabled high-confidence outreach, eliminating manual research." },
   ],
 
   // ─── Who This Is For ────────────────────────────────────
@@ -370,7 +370,7 @@ export const siteConfig = {
       headline: "Automation of data matching workflows",
       description: "AI-powered data matching enabled high-confidence outreach, eliminating manual research.",
       outcome: "Saved 2,400 hours of manual effort every year.",
-      metric: "2,400", label: "Hrs/Year Saved", client: "Alcrest Partners", url: "#",
+      metric: "2,400", label: "Hrs/Year Saved", client: "Real Estate Firm", url: "#",
     },
   ],
   caseStudiesIntro: "Named outcomes from recent analytics and automation projects.",
