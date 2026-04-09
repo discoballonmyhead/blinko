@@ -165,7 +165,7 @@ export function PricingPage() {
             gap: isMobile ? 24 : 32,
           }}>
             {[
-              { title: "No lock-in contracts", desc: "Work with us project-by-project or retainer—your choice." },
+              { title: "No lock-in contracts", desc: "Work with us project-by-project or retainer - your choice." },
               { title: "Fiverr-backed reputation", desc: "Pro & Top Rated freelancer with dozens of verified client reviews." },
               { title: "Results guaranteed", desc: "We iterate until the insights are actionable and the client is satisfied." },
             ].map((item, i) => (

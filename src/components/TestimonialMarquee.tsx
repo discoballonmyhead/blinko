@@ -64,7 +64,7 @@ function TestimonialCard({ t }: { t: Testimonial }) {
                         {t.author}
                     </div>
                     <div style={{ color: "rgba(255,255,255,0.3)", fontSize: 11, marginTop: 2 }}>
-                        {t.role} · {t.company}
+                        {t.company}
                     </div>
                 </div>
                 {t.source && (

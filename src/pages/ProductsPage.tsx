@@ -1,7 +1,6 @@
-import { Link } from "react-router-dom";
 import { useFadeIn } from "../hooks/useFadeIn";
 
-import { BarChart3, Layout, BrainCircuit, ChevronRight, Play, ExternalLink, Monitor } from "lucide-react";
+import { BarChart3, Layout, BrainCircuit, ChevronRight } from "lucide-react";
 import { AnimatedGridPattern } from "../components/AnimatedGridPattern";
 import { ParticleBackground } from "../components/ParticleBackground";
 import { siteConfig } from "../config/site.config";
@@ -18,32 +17,32 @@ function FadeUp({ children, delay = 0 }: { children: React.ReactNode; delay?: nu
   return <div ref={ref} style={style}>{children}</div>;
 }
 
-function DemoButton({ product }: { product: typeof siteConfig.products[0] }) {
-  const label = product.demoType === "video" ? "Watch Demo" : "View Demo";
-  const icon = product.demoType === "video"
-    ? <Play size={15} />
-    : product.demoType === "url"
-      ? <ExternalLink size={15} />
-      : <Monitor size={15} />;
-
-  return (
-    <Link
-      to={`/demo/${product.id}`}
-      style={{
-        display: "inline-flex", alignItems: "center", gap: 7,
-        padding: "11px 22px", borderRadius: 11, fontWeight: 700, fontSize: 13,
-        textDecoration: "none", color: "#fff",
-        background: `linear-gradient(135deg, ${product.color}, #0066FF)`,
-        boxShadow: `0 0 28px ${product.color}35`,
-        transition: "opacity 0.2s",
-      }}
-      onMouseEnter={e => (e.currentTarget as HTMLElement).style.opacity = "0.85"}
-      onMouseLeave={e => (e.currentTarget as HTMLElement).style.opacity = "1"}
-    >
-      {icon}{label}
-    </Link>
-  );
-}
+// Demo button commented out for now - will re-enable when demos are ready
+// function DemoButton({ product }: { product: typeof siteConfig.products[0] }) {
+//   const label = product.demoType === "video" ? "Watch Demo" : "View Demo";
+//   const icon = product.demoType === "video"
+//     ? <Play size={15} />
+//     : product.demoType === "url"
+//       ? <ExternalLink size={15} />
+//       : <Monitor size={15} />;
+//   return (
+//     <Link
+//       to={`/demo/${product.id}`}
+//       style={{
+//         display: "inline-flex", alignItems: "center", gap: 7,
+//         padding: "11px 22px", borderRadius: 11, fontWeight: 700, fontSize: 13,
+//         textDecoration: "none", color: "#fff",
+//         background: `linear-gradient(135deg, ${product.color}, #0066FF)`,
+//         boxShadow: `0 0 28px ${product.color}35`,
+//         transition: "opacity 0.2s",
+//       }}
+//       onMouseEnter={e => (e.currentTarget as HTMLElement).style.opacity = "0.85"}
+//       onMouseLeave={e => (e.currentTarget as HTMLElement).style.opacity = "1"}
+//     >
+//       {icon}{label}
+//     </Link>
+//   );
+// }
 
 export function ProductsPage() {
   const isMobile = useIsMobile();
@@ -79,7 +78,7 @@ export function ProductsPage() {
             fontSize: isMobile ? "0.95rem" : "1.1rem",
             lineHeight: 1.65, maxWidth: 480, margin: "0 auto",
           }}>
-            From raw data to boardroom decisions — our three product lines cover the full analytics journey.
+            From raw data to boardroom decisions - our three product lines cover the full analytics journey.
           </p>
         </div>
       </section>
@@ -105,29 +104,39 @@ export function ProductsPage() {
                     aspectRatio: "16/10",
                     background: `linear-gradient(135deg, ${product.color}0d, ${product.color}06)`,
                   }}>
-                    <div style={{ position: "absolute", inset: 0, opacity: 0.25 }}>
-                      <AnimatedGridPattern numSquares={10} maxOpacity={0.35} duration={7} />
-                    </div>
-                    <div style={{
-                      position: "absolute", inset: 0,
-                      display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 14,
-                    }}>
-                      <div style={{
-                        width: isMobile ? 64 : 88, height: isMobile ? 64 : 88,
-                        borderRadius: isMobile ? 16 : 22,
-                        display: "flex", alignItems: "center", justifyContent: "center",
-                        background: `${product.color}1a`, color: product.color,
-                        boxShadow: `0 0 60px ${product.color}35`,
-                      }}>
-                        {iconMap[product.icon]}
-                      </div>
-                      <span style={{ color: "rgba(255,255,255,0.25)", fontSize: 11, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase" }}>
-                        {product.name}
-                      </span>
-                    </div>
-                    <div style={{ position: "absolute", bottom: 14, right: 14 }}>
-                      <DemoButton product={product} />
-                    </div>
+                    {product.image ? (
+                      <img
+                        src={product.image}
+                        alt={`${product.name} screenshot`}
+                        style={{
+                          width: "100%", height: "100%",
+                          objectFit: "cover", objectPosition: "top left",
+                        }}
+                      />
+                    ) : (
+                      <>
+                        <div style={{ position: "absolute", inset: 0, opacity: 0.25 }}>
+                          <AnimatedGridPattern numSquares={10} maxOpacity={0.35} duration={7} />
+                        </div>
+                        <div style={{
+                          position: "absolute", inset: 0,
+                          display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 14,
+                        }}>
+                          <div style={{
+                            width: isMobile ? 64 : 88, height: isMobile ? 64 : 88,
+                            borderRadius: isMobile ? 16 : 22,
+                            display: "flex", alignItems: "center", justifyContent: "center",
+                            background: `${product.color}1a`, color: product.color,
+                            boxShadow: `0 0 60px ${product.color}35`,
+                          }}>
+                            {iconMap[product.icon]}
+                          </div>
+                          <span style={{ color: "rgba(255,255,255,0.25)", fontSize: 11, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase" }}>
+                            {product.name}
+                          </span>
+                        </div>
+                      </>
+                    )}
                   </div>
                 </div>
 
@@ -166,7 +175,7 @@ export function ProductsPage() {
                       </li>
                     ))}
                   </ul>
-                  <DemoButton product={product} />
+                  {/* DemoButton will go here when demos are ready */}
                 </div>
               </div>
             </FadeUp>

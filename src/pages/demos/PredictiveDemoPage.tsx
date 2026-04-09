@@ -57,7 +57,7 @@ export function PredictiveDemoPage() {
             whiteSpace: isMobile ? "nowrap" : "normal",
             overflow: "hidden", textOverflow: "ellipsis",
           }}>
-            {isMobile ? "Predictive Demo" : "Blink Predictive Analytics — Demo"}
+            {isMobile ? "Predictive Demo" : "Blink Predictive Analytics - Demo"}
           </span>
         </div>
         <div style={{ width: isMobile ? 24 : 80, flexShrink: 0 }} />

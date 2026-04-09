@@ -13,7 +13,7 @@ export const siteConfig = {
   },
 
   // ─── Navigation ──────────────────────────────────────────
-  // Hash links like "/#about" work from ANY page — they navigate
+  // Hash links like "/#about" work from ANY page - they navigate
   // to home then auto-scroll to the section with that id.
   nav: {
     links: [
@@ -29,7 +29,7 @@ export const siteConfig = {
   // ─── Hero Section ─────────────────────────────────────────
   hero: {
     headline: "Your business data, finally in one clear view",
-    subheadline: "Blinko helps finance, fintech, and ecommerce teams turn messy data into clear, live dashboards — without hiring a full in-house data or dev team.",
+    subheadline: "Blinko helps finance, fintech, and ecommerce teams turn messy data into clear, live dashboards - without hiring a full in-house data or dev team.",
     description:
       "Built for growing teams stuck between spreadsheets, disconnected tools, and slow reporting.",
     primaryCTA: { label: "Book a Blueprint Call", path: "/#contact" },
@@ -62,7 +62,7 @@ export const siteConfig = {
       },
       {
         title: "Need business visibility now",
-        description: "You want a dashboard that helps your team make faster decisions — not a 6-month consulting engagement.",
+        description: "You want a dashboard that helps your team make faster decisions - not a 6-month consulting engagement.",
         icon: "Eye",
       },
     ],
@@ -75,7 +75,7 @@ export const siteConfig = {
     blocks: [
       {
         title: "Your data lives everywhere",
-        description: "Spreadsheets, exports, payment tools, CRM, operations systems, ad platforms, internal files — but not in one clear view.",
+        description: "Spreadsheets, exports, payment tools, CRM, operations systems, ad platforms, internal files - but not in one clear view.",
         icon: "FolderOpen",
       },
       {
@@ -89,7 +89,7 @@ export const siteConfig = {
         icon: "AlertTriangle",
       },
       {
-        title: "You know what you need — but not how to build it",
+        title: "You know what you need - but not how to build it",
         description: "Hiring a full team is expensive. Off-the-shelf tools rarely fit. Internal resources are too stretched.",
         icon: "HelpCircle",
       },
@@ -100,22 +100,22 @@ export const siteConfig = {
   // ─── What You Get ───────────────────────────────────────
   deliverables: {
     headline: "What you get",
-    intro: "A project with Blinko gives you something your team will actually use every day — not just charts on a screen.",
+    intro: "A project with Blinko gives you something your team will actually use every day - not just charts on a screen.",
     tiers: [
       {
         name: "Blink Analytics",
         timeline: "Results in weeks",
         blocks: [
-          { title: "Statistical analysis built around your questions", description: "Hypothesis testing, regression, A/B validation — answers you can act on." },
+          { title: "Statistical analysis built around your questions", description: "Hypothesis testing, regression, A/B validation - answers you can act on." },
           { title: "Clean, structured reporting", description: "We help structure your metrics so your team can stop debating numbers and start acting on them." },
-          { title: "Interactive dashboards", description: "Power BI, Streamlit, or a lightweight web app — built around your KPIs and workflows." },
+          { title: "Interactive dashboards", description: "Power BI, Streamlit, or a lightweight web app - built around your KPIs and workflows." },
         ],
       },
       {
         name: "Blink Intelligence",
         timeline: "Live in 4–8 weeks",
         blocks: [
-          { title: "Custom dashboards with drill-down capability", description: "Role-based access, automated pipelines, and real-time data — everything your team needs in one place." },
+          { title: "Custom dashboards with drill-down capability", description: "Role-based access, automated pipelines, and real-time data - everything your team needs in one place." },
           { title: "Database design & data infrastructure", description: "We set up the data layer properly so everything connects and nothing breaks as you grow." },
           { title: "Predictive modeling & internal tools", description: "Churn analysis, forecasting, and lightweight apps your team can use daily." },
         ],
@@ -155,7 +155,7 @@ export const siteConfig = {
     },
     {
       title: "Fintech Operations Dashboard",
-      description: "Monitor the metrics that matter across growth, approvals, volume, and anomalies — all in one place.",
+      description: "Monitor the metrics that matter across growth, approvals, volume, and anomalies - all in one place.",
       metrics: ["Approval rates", "Transaction volume", "Fraud or risk anomalies", "Funnel conversion", "Operational bottlenecks"],
       cta: "View demo",
     },
@@ -183,7 +183,7 @@ export const siteConfig = {
       name: "Blink Analytics",
       subtitle: "Statistical Analysis, Reporting & Dashboards",
       description:
-        "For businesses that need clarity on their data without building infrastructure. Get statistical analysis, business reporting, and interactive dashboards — delivered in weeks.",
+        "For businesses that need clarity on their data without building infrastructure. Get statistical analysis, business reporting, and interactive dashboards - delivered in weeks.",
       features: [
         "Statistical analysis & hypothesis testing",
         "Business performance reporting",
@@ -191,10 +191,11 @@ export const siteConfig = {
         "Interactive dashboards (Power BI, Streamlit, or web app)",
         "A/B test design & validation",
       ],
-      demoType: "url" as "url" | "video" | "page",
-      demoUrl: "https://www.blinko-analytics.com",  // ← replace with your live demo URL
-      demoVideo: null as string | null,
-      demoPage: null as string | null,
+      // demoType: "url" as "url" | "video" | "page",
+      // demoUrl: "https://www.blinko-analytics.com",
+      // demoVideo: null as string | null,
+      // demoPage: null as string | null,
+      image: null as string | null,  // ← add product screenshot here
       icon: "BarChart3",
       color: "#00C2FF",
     },
@@ -203,7 +204,7 @@ export const siteConfig = {
       name: "Blink Intelligence",
       subtitle: "Custom Platforms, Pipelines & Predictive Modeling",
       description:
-        "Custom web dashboards, automated pipelines, predictive modeling, and internal tools — all connected and live in 4–8 weeks.",
+        "Custom web dashboards, automated pipelines, predictive modeling, and internal tools - all connected and live in 4–8 weeks.",
       features: [
         "Custom web dashboards with drill-down capability",
         "Automated data pipelines & scheduling",
@@ -212,10 +213,11 @@ export const siteConfig = {
         "Database design & data infrastructure",
         "Automated alerts for critical data changes",
       ],
-      demoType: "video" as "url" | "video" | "page",
-      demoUrl: null as string | null,
-      demoVideo: "/videos/bi-demo.mp4",  // ← drop your .mp4 in /public/videos/
-      demoPage: null as string | null,
+      // demoType: "video" as "url" | "video" | "page",
+      // demoUrl: null as string | null,
+      // demoVideo: "/videos/bi-demo.mp4",
+      // demoPage: null as string | null,
+      image: `${import.meta.env.BASE_URL}images/image_1.png`,
       icon: "Layout",
       color: "#00FFB2",
     },
@@ -224,7 +226,7 @@ export const siteConfig = {
       name: "Blink AI",
       subtitle: "AI-Powered Insights, Anomaly Detection & Client Health Scores",
       description:
-        "Ask your data questions in plain English, catch problems before they escalate, and know which customers need attention — deployed in 8–12 weeks.",
+        "Ask your data questions in plain English, catch problems before they escalate, and know which customers need attention - deployed in 8–12 weeks.",
       features: [
         "AI-powered natural language insights",
         "Client health score & churn prediction",
@@ -232,10 +234,11 @@ export const siteConfig = {
         "Dedicated data scientist",
         "SLA & compliance support",
       ],
-      demoType: "page" as "url" | "video" | "page",
-      demoUrl: null as string | null,
-      demoVideo: null as string | null,
-      demoPage: "/demos/predictive",  // ← internal route, see src/pages/demos/
+      // demoType: "page" as "url" | "video" | "page",
+      // demoUrl: null as string | null,
+      // demoVideo: null as string | null,
+      // demoPage: "/demos/predictive",
+      image: `${import.meta.env.BASE_URL}images/image_2.png`,
       icon: "BrainCircuit",
       color: "#6404ff",
     },
@@ -243,16 +246,16 @@ export const siteConfig = {
 
   // ─── Why Choose Us ────────────────────────────────────────
   pillars: [
-    { icon: "Zap", title: "Fast", description: "Fast-track from data to decision — maximum business value" },
+    { icon: "Zap", title: "Fast", description: "Fast-track from data to decision - maximum business value" },
     { icon: "Layers", title: "Flexible", description: "Flexible solutions, boutique-style care" },
     { icon: "RefreshCw", title: "Full-cycle", description: "Full-cycle partnership with end-to-end support" },
-    { icon: "Shield", title: "Firm", description: "Firm data foundation — clean, unified, ready" },
+    { icon: "Shield", title: "Firm", description: "Firm data foundation - clean, unified, ready" },
   ],
 
   // ─── Testimonials ─────────────────────────────────────────
   testimonials: [
     {
-      quote: "Blinko went beyond expectations — found ways to improve the product even more than planned, and helped bring my vision to life. Exceptional work, delivered on time.",
+      quote: "Blinko went beyond expectations - found ways to improve the product even more than planned, and helped bring my vision to life. Exceptional work, delivered on time.",
       author: "Marco D.",
       role: "CEO",
       company: "Canada",
@@ -260,7 +263,7 @@ export const siteConfig = {
       source: null,
     },
     {
-      quote: "The statistics for our project were complex — many rejected it, but Blinko took it on. They not only answered our original questions but went above and beyond by preparing a beautiful dashboard.",
+      quote: "The statistics for our project were complex - many rejected it, but Blinko took it on. They not only answered our original questions but went above and beyond by preparing a beautiful dashboard.",
       author: "Ricardo O.",
       role: "Founder",
       company: "Chile",
@@ -276,7 +279,7 @@ export const siteConfig = {
       source: null,
     },
     {
-      quote: "Blinko delivered exceptional work on a highly complex problem. Deep expertise in data science, machine learning, and business domain knowledge — exceeded all expectations.",
+      quote: "Blinko delivered exceptional work on a highly complex problem. Deep expertise in data science, machine learning, and business domain knowledge - exceeded all expectations.",
       author: "Nextrer",
       role: "Founder",
       company: "Singapore",
@@ -292,7 +295,7 @@ export const siteConfig = {
       source: null,
     },
     {
-      quote: "From our initial contact, Blinko demonstrated a keen understanding of our project. The analysis was thorough, responses always prompt — made us feel like our project was the top priority.",
+      quote: "From our initial contact, Blinko demonstrated a keen understanding of our project. The analysis was thorough, responses always prompt - made us feel like our project was the top priority.",
       author: "Dave S.",
       role: "Founder",
       company: "United States",
@@ -381,9 +384,9 @@ export const siteConfig = {
   //   name       Full name
   //   role       Short role label shown in the coloured badge  (e.g. "Founder", "CTO")
   //   title      Full job title shown under the name
-  //   bio        Paragraph bio — 2-4 sentences works best
-  //   image      Path inside /public  e.g. "/images/dror.jpg"  — null shows initials avatar
-  //   linkedin   Full https:// URL — null hides the button
+  //   bio        Paragraph bio - 2-4 sentences works best
+  //   image      Path inside /public  e.g. "/images/dror.jpg"  - null shows initials avatar
+  //   linkedin   Full https:// URL - null hides the button
   //   accent     Hex colour for this person's card accent / badge  (optional, defaults to cyan)
   //
   leadership: [
@@ -450,7 +453,7 @@ export const siteConfig = {
       },
       {
         name: "Blink Intelligence", price: "From $7,000", period: "/ project",
-        description: "Your center analytics layer — custom platforms, pipelines, and predictive modeling.",
+        description: "Your center analytics layer - custom platforms, pipelines, and predictive modeling.",
         features: ["Everything in Blink Analytics", "Custom web dashboards with drill-down capability", "Automated data pipelines & scheduling", "Predictive modeling & churn analysis", "Role-based access for multiple users", "Database design & data infrastructure", "Lightweight internal tools & apps", "Automated alerts for critical data changes"],
         cta: "Most Popular", ctaPath: "/#contact", highlighted: true,
       },
@@ -474,7 +477,7 @@ export const siteConfig = {
   // ─── Contact ──────────────────────────────────────────────
   contact: {
     headline: "Let's talk about your data",
-    subheadline: "Book a Dashboard Blueprint Call — we'll get back to you within 24 hours.",
+    subheadline: "Book a Dashboard Blueprint Call - we'll get back to you within 24 hours.",
     offices: [
       { city: "Haifa", address: "Pinkser 71, Haifa, Israel" },
       { city: "Hanoi", address: "168 Ngoc Ha Street, Hanoi, Vietnam" },
