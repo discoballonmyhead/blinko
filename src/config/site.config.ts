@@ -479,8 +479,8 @@ export const siteConfig = {
     headline: "Let's talk about your data",
     subheadline: "Book a Dashboard Blueprint Call - we'll get back to you within 24 hours.",
     offices: [
-      { city: "Haifa", address: "Pinkser 71, Haifa, Israel" },
-      { city: "Hanoi", address: "168 Ngoc Ha Street, Hanoi, Vietnam" },
+      { city: "United States", address: "Blinko Analytics LLC" },
+      { city: "Ho Chi Minh City", address: "Vietnam" },
     ],
     email: "info@blinko-analytics.com",
     phone: null as string | null,       // set to null to hide
@@ -489,7 +489,7 @@ export const siteConfig = {
 
   // ─── Footer ───────────────────────────────────────────────
   footer: {
-    tagline: "Turning data into decisions since 2016.",
+    tagline: "Turning data into decisions since 2023.",
     links: [
       { label: "Privacy Policy", path: "#" },
       { label: "Terms of Service", path: "#" },
