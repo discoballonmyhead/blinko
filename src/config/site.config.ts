@@ -41,7 +41,7 @@ export const siteConfig = {
   statsHeadline: "Real impact, measured in real numbers",
   stats: [
     { value: "40%", label: "Increase", client: "Solventis", description: "Automated loan assessments increased the number of clients processed through financial reviews." },
-    { value: "$500K+", label: "Protected revenue annually", client: "Fractal", description: "Real-time analytics platform saved 10-12 hours per week per user in issue response time." },
+    { value: "$500K+", label: "Protected revenue annually", client: "Fractal", description: "Real-time analytics system for tracking health scores, churn analysis, and early issue detection." },
     { value: "2,400", label: "Hrs/Year Saved", client: "Alcrest Partners", description: "AI-powered data matching enabled high-confidence outreach, eliminating manual research." },
   ],
 
@@ -361,9 +361,9 @@ export const siteConfig = {
       metric: "40%", label: "Increase", client: "Solventis", url: "#",
     },
     {
-      headline: "Revenue protection and faster incident handling",
-      description: "Real-time analytics platform saved 10-12 hours per week per user in issue response time.",
-      outcome: "Protected $500K+ in annual revenue at-risk from delayed issue detection.",
+      headline: "Revenue protection through proactive analytics",
+      description: "Real-time analytics system for tracking health scores, churn analysis, and early issue detection.",
+      outcome: "Protected $500K+ in annual revenue by identifying at-risk accounts before churn.",
       metric: "$500K+", label: "Protected revenue annually", client: "Fractal", url: "#",
     },
     {
