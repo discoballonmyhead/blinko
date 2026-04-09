@@ -40,7 +40,7 @@ export const siteConfig = {
   // Title: "Real impact, measured in real numbers"
   statsHeadline: "Real impact, measured in real numbers",
   stats: [
-    { value: "40%", label: "Increase", client: "Solventis", description: "Automated loan assessments increased the number of clients processed through financial reviews." },
+    { value: "40%", label: "Increase", client: "Apickle", description: "Automated loan assessments increased the number of clients processed through financial reviews." },
     { value: "$500K+", label: "Protected revenue annually", client: "Fractal", description: "Real-time analytics system for tracking health scores, churn analysis, and early issue detection." },
     { value: "2,400", label: "Hrs/Year Saved", client: "Alcrest Partners", description: "AI-powered data matching enabled high-confidence outreach, eliminating manual research." },
   ],
@@ -358,7 +358,7 @@ export const siteConfig = {
       headline: "Loan review throughput improvement",
       description: "Automated loan assessments increased the number of clients processed through financial reviews.",
       outcome: "More applications reviewed without adding analyst headcount.",
-      metric: "40%", label: "Increase", client: "Solventis", url: "#",
+      metric: "40%", label: "Increase", client: "Apickle", url: "#",
     },
     {
       headline: "Revenue protection through proactive analytics",
